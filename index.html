@@ -2,98 +2,65 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NAVI&HUI LENORMAND </title>
 <style>
-  :root{
-    --bg:#ede6ff; --panel:#f7f2ff; --panel2:#fff; --text:#3c2f62;
-    --muted:#7e72a3; --ring:#c6b9e9; --shadow:0 6px 16px rgba(80,60,130,.18);
-    --card-w: 180px;            /* 기본 카드 폭 (그랑타블로/목록 공통 기준) */
-    --card-radius: 12px;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);font-family:system-ui,sans-serif;color:var(--text)}
-  header{position:sticky;top:0;background:rgba(255,255,255,.7);backdrop-filter:blur(6px);
-          padding:14px;border-bottom:1px solid var(--ring);z-index:10}
-  h1{margin:0;font-size:22px;color:#493c7b}
-  .container{max-width:1150px;margin:0 auto;padding:16px}
+:root{
+  --bg:#ede6ff; --panel:#f7f2ff; --panel2:#fff; --text:#3c2f62;
+  --muted:#7e72a3; --ring:#c6b9e9; --shadow:0 6px 16px rgba(80,60,130,.18);
+  --card-w:180px; --radius:12px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,sans-serif}
+header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.7);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--ring);padding:14px}
+h1{margin:0;font-size:22px;color:#493c7b}
+.container{max-width:1150px;margin:0 auto;padding:16px}
+.btn{background:var(--panel);border:1px solid var(--ring);padding:8px 14px;border-radius:10px;cursor:pointer}
+.card,.card-mini{background:var(--panel2);border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px;position:relative}
+.badge{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 6px;border-radius:999px;background:rgba(0,0,0,.2);color:#fff}
+.img-box{width:100%;aspect-ratio:3/4;background:#fff;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.img-box img{width:100%;height:100%;object-fit:contain}
+.card-positive{border:2px solid #4cc3ff}
+.card-negative{border:2px solid #ff6b6b}
+.card-neutral{border:2px solid #7df58e}
 
-  .btn{background:var(--panel);border:1px solid var(--ring);padding:8px 14px;border-radius:10px;
-       cursor:pointer;font-size:14px;color:var(--text);transition:.15s}
-  .btn:hover{box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.drawbox{background:var(--panel);border:1px solid var(--ring);border-radius:14px;padding:14px;box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.draw-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.draw-result{display:grid;gap:12px;margin-top:12px}
+.triple{grid-template-columns:repeat(3,1fr)}
+.five{grid-template-columns:repeat(5,minmax(120px,1fr));overflow-x:auto}
+#drawSummary{margin-top:10px;border:1px dashed var(--ring);padding:10px;border-radius:10px;background:var(--panel2);box-shadow:var(--shadow);color:var(--muted)}
+.hidden{display:none}
 
-  .card,.card-mini{background:var(--panel2);border:1px solid var(--ring);border-radius:var(--card-radius);
-                   position:relative;padding:10px;box-shadow:var(--shadow)}
-  .img-box{width:100%;aspect-ratio:3/4;background:#fff;border-radius:10px;display:flex;
-           align-items:center;justify-content:center;overflow:hidden;margin-bottom:6px}
-  .img-box img{width:100%;height:100%;object-fit:contain}
+/* ── 십자 스프레드: 박스 내부 균등 축소 ── */
+.cross-wrap{
+  --cross-min:140px;
+  display:grid;
+  grid-template-areas:
+    ". top ."
+    "left center right"
+    ". bottom .";
+  grid-template-columns: 1fr minmax(var(--cross-min), 1.2fr) 1fr;
+  gap:12px; width:100%; max-width:760px; margin:0 auto;
+}
+.pos1{grid-area:top}.pos2{grid-area:left}.pos3{grid-area:center}.pos4{grid-area:right}.pos5{grid-area:bottom}
 
-  /* 목록 보기 */
-  .grid{display:grid;gap:14px;padding:10px 0;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+/* ── 그랑타블로: 통일 크기 + 가로 스크롤 ── */
+.gt-wrap{border:1px solid var(--ring);border-radius:14px;background:var(--panel2);box-shadow:var(--shadow);padding:10px}
+.gt-scroll{overflow-x:auto;padding-bottom:8px}
+.gt-grid{display:grid;gap:8px;justify-content:start}
+.gt-card{width:var(--card-w)}
+.gt-title{margin:6px 0 0;font-size:14px}
+.gt-toolbar{display:flex;gap:8px;align-items:center;margin:8px 0;color:var(--muted)}
+.hl{outline:3px solid #6b7bff;outline-offset:2px}
+.sidepanel{margin-top:10px;border:1px dashed var(--ring);border-radius:10px;background:var(--panel2);box-shadow:var(--shadow);padding:10px}
 
-  /* 뽑기 박스 */
-  .drawbox{background:var(--panel);border:1px solid var(--ring);border-radius:14px;padding:14px;
-           box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
-  .draw-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-  .draw-result{display:grid;gap:12px;margin-top:12px}
-  .triple{grid-template-columns:repeat(3,1fr)}
-  .five{grid-template-columns:repeat(5,minmax(120px,1fr));overflow-x:auto}
-
-  .type-badge{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 6px;border-radius:999px;
-              background:rgba(0,0,0,.2);color:#fff}
-  .card-positive{border:2px solid #4cc3ff}
-  .card-negative{border:2px solid #ff6b6b}
-  .card-neutral{border:2px solid #7df58e}
-
-  #drawSummary{margin-top:10px;border:1px dashed var(--ring);padding:10px;border-radius:10px;
-               background:var(--panel2);box-shadow:var(--shadow);color:var(--muted)}
-
-  /* ── 십자 스프레드: 박스 안에 완전 고정 + 중앙 정렬 ── */
-  .cross-wrap{
-    display:grid;
-    grid-template-areas:
-      ". top ."
-      "left center right"
-      ". bottom .";
-    grid-template-columns:1fr minmax(180px, 1fr) 1fr; /* 가운데를 넓게 */
-    gap:12px;
-    width:100%;
-    max-width:700px;        /* 박스 내부 최대 폭 */
-    margin:0 auto;          /* 중앙 정렬 */
-  }
-  .pos1{grid-area:top}.pos2{grid-area:left}.pos3{grid-area:center}.pos4{grid-area:right}.pos5{grid-area:bottom}
-
-  /* ── 그랑타블로: 카드 완전 동일 크기 ── */
-  .gt-grid{display:grid;gap:8px;justify-content:center}
-  .gt-card{width:var(--card-w)}
-  .gt-card .img-box{aspect-ratio:3/4}
-  .gt-title{margin:6px 0 0;font-size:14px}
-
-  /* 데스크톱: 9열 */
-  .gt-9x4{grid-template-columns:repeat(9, var(--card-w))}
-  .gt-8x4{grid-template-columns:repeat(8, var(--card-w))}
-  .gt-last4{grid-template-columns:repeat(4, var(--card-w));margin:8px auto 0}
-
-  /* 반응형 */
-  @media (max-width: 1100px){
-    :root{ --card-w: 160px; }
-    .grid{grid-template-columns:repeat(3, minmax(0,1fr))}
-    .gt-9x4{grid-template-columns:repeat(6, var(--card-w))}
-  }
-  @media (max-width: 760px){
-    :root{ --card-w: 140px; }
-    h1{font-size:20px}
-    .grid{grid-template-columns:repeat(2, minmax(0,1fr));gap:12px}
-    .card,.card-mini{padding:10px}
-    .triple{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-    .five{grid-template-columns:repeat(5,minmax(120px,1fr));gap:10px}
-    .cross-wrap{max-width:560px;grid-template-columns:1fr minmax(160px, 1fr) 1fr}
-    .gt-9x4{grid-template-columns:repeat(4, var(--card-w))}   /* 모바일: 4열 */
-    .gt-8x4{grid-template-columns:repeat(4, var(--card-w))}
-  }
+/* 반응형 */
+@media (max-width:1100px){ :root{--card-w:160px} .triple{gap:10px} .cross-wrap{--cross-min:130px} }
+@media (max-width:760px){  :root{--card-w:140px} .cross-wrap{--cross-min:120px} }
 </style>
 </head>
-
 <body>
 <header><h1>NABY LENORMAND ORACLE</h1></header>
 
@@ -109,8 +76,7 @@
       <button class="btn" id="btnGT94">🧩 9×4</button>
       <button class="btn" id="btnGT84">🧩 8×4+4</button>
     </div>
-
-    <div id="qBox" style="margin-top:5px;color:var(--muted)"></div>
+    <div id="qBox" style="margin-top:4px;color:var(--muted)"></div>
     <div id="drawArea" class="draw-result"></div>
     <div id="drawSummary" class="hidden"></div>
   </section>
@@ -125,191 +91,236 @@
 </footer>
 
 <script>
-/* 이미지 경로 */
-function imgPath(num){const n=num<10?`0${num}`:num;return `images/레노먼드-${n}.png`}
+/* ---------- 데이터/유틸 ---------- */
+function src(num){const n=String(num).padStart(2,'0');return `images/레노먼드-${n}.png`}
+const T = (t)=> t==='positive'?'🔵':(t==='negative'?'🔴':'🟢');
+const C = (t)=> t==='positive'?'card-positive':(t==='negative'?'card-negative':'card-neutral');
 
-/* 카드 데이터 */
-const CARDS=[
-  {num:1,code:"Rider",kr:"기수",key:"소식•이동",add:"빠른 변화·연락 도착",type:"positive"},
-  {num:2,code:"Clover",kr:"클로버",key:"행운•기회",add:"짧은 찬스·시도 좋음",type:"positive"},
-  {num:3,code:"Ship",kr:"선박",key:"여행•확장",add:"관계·환경 변화",type:"neutral"},
-  {num:4,code:"House",kr:"집",key:"가정•안정",add:"기반 다지기",type:"neutral"},
-  {num:5,code:"Tree",kr:"나무",key:"건강•성장",add:"장기 성장·회복",type:"positive"},
-  {num:6,code:"Cloud",kr:"구름",key:"혼란•불확실",add:"판단 보류·챙기기",type:"negative"},
-  {num:7,code:"Snake",kr:"뱀",key:"유혹•기만",add:"겉과속 다름·주의",type:"negative"},
-  {num:8,code:"Coffin",kr:"관",key:"끝•전환",add:"정리·재출발",type:"negative"},
-  {num:9,code:"Bouquet",kr:"부케",key:"기쁨•선물",add:"호의 상승",type:"positive"},
-  {num:10,code:"Scythe",kr:"낫",key:"단절•결정",add:"빠른 선택",type:"negative"},
-  {num:11,code:"Whip",kr:"채찍",key:"갈등•반복",add:"루프 끊기",type:"negative"},
-  {num:12,code:"Bird",kr:"새",key:"대화•소문",add:"말 많은 시기",type:"neutral"},
-  {num:13,code:"Child",kr:"아이",key:"새 시작•순수",add:"작지만 성장 큼",type:"positive"},
-  {num:14,code:"Fox",kr:"여우",key:"일•의심",add:"계약·정보 재확인",type:"neutral"},
-  {num:15,code:"Bear",kr:"곰",key:"힘•보호",add:"후원·리더십",type:"positive"},
-  {num:16,code:"Stars",kr:"별",key:"희망•목표",add:"비전 명확",type:"positive"},
-  {num:17,code:"Stork",kr:"황새",key:"변화•개선",add:"습관 업데이트",type:"positive"},
-  {num:18,code:"Dog",kr:"개",key:"신뢰•우정",add:"동맹·파트너십",type:"positive"},
-  {num:19,code:"Tower",kr:"탑",key:"제도•독립",add:"홀로서기",type:"neutral"},
-  {num:20,code:"Garden",kr:"정원",key:"모임•공개",add:"좋은 평판",type:"positive"},
-  {num:21,code:"Mountain",kr:"산",key:"장애•지연",add:"시간 필요",type:"negative"},
-  {num:22,code:"Crossroad",kr:"갈림길",key:"선택•결정",add:"데이터 비교",type:"neutral"},
-  {num:23,code:"Mice",kr:"쥐",key:"손실•소모",add:"미세누수 점검",type:"negative"},
-  {num:24,code:"Heart",kr:"하트",key:"사랑•감정",add:"감정 회복",type:"positive"},
-  {num:25,code:"Ring",kr:"반지",key:"계약•순환",add:"장기 커밋",type:"neutral"},
-  {num:26,code:"Book",kr:"책",key:"비밀•학습",add:"정보 미공개",type:"neutral"},
-  {num:27,code:"Letter",kr:"편지",key:"연락•문서",add:"증거·통보",type:"positive"},
+const CARDS=[ /* 간결 요약 + 추가 코멘트 + 톤 */
+  {num:1,code:"Rider",kr:"기수",key:"소식·이동",add:"빠른 변화·연락 도착",type:"positive"},
+  {num:2,code:"Clover",kr:"클로버",key:"행운·기회",add:"짧은 찬스·시도 좋음",type:"positive"},
+  {num:3,code:"Ship",kr:"선박",key:"여행·확장",add:"관계·환경 변화",type:"neutral"},
+  {num:4,code:"House",kr:"집",key:"가정·안정",add:"기반 다지기",type:"neutral"},
+  {num:5,code:"Tree",kr:"나무",key:"건강·성장",add:"장기 성장·회복",type:"positive"},
+  {num:6,code:"Cloud",kr:"구름",key:"혼란·불확실",add:"판단 보류·챙기기",type:"negative"},
+  {num:7,code:"Snake",kr:"뱀",key:"유혹·기만",add:"겉과속 다름·주의",type:"negative"},
+  {num:8,code:"Coffin",kr:"관",key:"끝·전환",add:"정리·재출발",type:"negative"},
+  {num:9,code:"Bouquet",kr:"부케",key:"기쁨·선물",add:"호의 상승",type:"positive"},
+  {num:10,code:"Scythe",kr:"낫",key:"단절·결정",add:"빠른 선택",type:"negative"},
+  {num:11,code:"Whip",kr:"채찍",key:"갈등·반복",add:"루프 끊기",type:"negative"},
+  {num:12,code:"Bird",kr:"새",key:"대화·소문",add:"말 많은 시기",type:"neutral"},
+  {num:13,code:"Child",kr:"아이",key:"새 시작·순수",add:"작지만 성장 큼",type:"positive"},
+  {num:14,code:"Fox",kr:"여우",key:"일·의심",add:"계약·정보 재확인",type:"neutral"},
+  {num:15,code:"Bear",kr:"곰",key:"힘·보호",add:"후원·리더십",type:"positive"},
+  {num:16,code:"Stars",kr:"별",key:"희망·목표",add:"비전 명확",type:"positive"},
+  {num:17,code:"Stork",kr:"황새",key:"변화·개선",add:"습관 업데이트",type:"positive"},
+  {num:18,code:"Dog",kr:"개",key:"신뢰·우정",add:"동맹·파트너십",type:"positive"},
+  {num:19,code:"Tower",kr:"탑",key:"제도·독립",add:"홀로서기",type:"neutral"},
+  {num:20,code:"Garden",kr:"정원",key:"모임·공개",add:"좋은 평판",type:"positive"},
+  {num:21,code:"Mountain",kr:"산",key:"장애·지연",add:"시간 필요",type:"negative"},
+  {num:22,code:"Crossroad",kr:"갈림길",key:"선택·결정",add:"데이터 비교",type:"neutral"},
+  {num:23,code:"Mice",kr:"쥐",key:"손실·소모",add:"미세누수 점검",type:"negative"},
+  {num:24,code:"Heart",kr:"하트",key:"사랑·감정",add:"감정 회복",type:"positive"},
+  {num:25,code:"Ring",kr:"반지",key:"계약·순환",add:"장기 커밋",type:"neutral"},
+  {num:26,code:"Book",kr:"책",key:"비밀·학습",add:"정보 미공개",type:"neutral"},
+  {num:27,code:"Letter",kr:"편지",key:"연락·문서",add:"증거·통보",type:"positive"},
   {num:28,code:"Man",kr:"남성",key:"핵심 인물",add:"중심 남성",type:"neutral"},
   {num:29,code:"Woman",kr:"여성",key:"핵심 인물",add:"중심 여성",type:"neutral"},
-  {num:30,code:"Lily",kr:"백합",key:"평화•성숙",add:"휴식·품위",type:"positive"},
-  {num:31,code:"Sun",kr:"태양",key:"성공•활력",add:"긍정 결과",type:"positive"},
-  {num:32,code:"Moon",kr:"달",key:"명예•감정",add:"감정 리듬",type:"positive"},
-  {num:33,code:"Key",kr:"열쇠",key:"해결•정답",add:"돌파구",type:"positive"},
-  {num:34,code:"Fish",kr:"물고기",key:"재물•교류",add:"교류·거래 증가",type:"neutral"},
-  {num:35,code:"Anchor",kr:"닻",key:"안정•고정",add:"지속성",type:"neutral"},
-  {num:36,code:"Cross",kr:"십자가",key:"고난•신념",add:"책임·버티기",type:"negative"},
+  {num:30,code:"Lily",kr:"백합",key:"평화·성숙",add:"휴식·품위",type:"positive"},
+  {num:31,code:"Sun",kr:"태양",key:"성공·활력",add:"긍정 결과",type:"positive"},
+  {num:32,code:"Moon",kr:"달",key:"명예·감정",add:"감정 리듬",type:"positive"},
+  {num:33,code:"Key",kr:"열쇠",key2:"",key:"해결·정답",add:"돌파구",type:"positive"},
+  {num:34,code:"Fish",kr:"물고기",key:"재물·교류",add:"교류·거래 증가",type:"neutral"},
+  {num:35,code:"Anchor",kr:"닻",key:"안정·고정",add:"지속성",type:"neutral"},
+  {num:36,code:"Cross",kr:"십자가",key:"고난·신념",add:"책임·버티기",type:"negative"},
 ];
 
-/* 공용 엘리먼트 */
-const grid=document.getElementById("grid");
-const drawArea=document.getElementById("drawArea");
-const toggleQ=document.getElementById("toggleQ");
-const inputQ=document.getElementById("inputQ");
-const qBox=document.getElementById("qBox");
-const tClass=t=>t==="positive"?"card-positive":(t==="negative"?"card-negative":"card-neutral");
-const tEmoji=t=>t==="positive"?"🔵":(t==="negative"?"🔴":"🟢");
+const byNum=new Map(CARDS.map(c=>[c.num,c]));
 
-/* 목록 렌더 */
-function loadList(list){
-  grid.innerHTML="";
+/* ---------- 목록 ---------- */
+const grid=document.getElementById('grid');
+function renderList(list){
+  grid.innerHTML='';
   list.forEach(c=>{
-    const div=document.createElement("div");
-    div.className="card "+tClass(c.type);
-    div.innerHTML=`
-      <span class="type-badge">${tEmoji(c.type)}</span>
-      <div class="img-box"><img src="${imgPath(c.num)}" alt="${c.code}"></div>
+    const el=document.createElement('div');
+    el.className=`card ${C(c.type)}`;
+    el.innerHTML = `
+      <span class="badge">${T(c.type)}</span>
+      <div class="img-box"><img src="${src(c.num)}" alt="${c.code}"></div>
       <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
       <p><em>${c.key}</em> — ${c.add}</p>`;
-    grid.appendChild(div);
+    grid.appendChild(el);
   });
 }
-loadList(CARDS);
+renderList(CARDS);
 
-/* 토글/검색 */
-let open=false;
-document.getElementById("toggleList").onclick=()=>{
-  open=!open; grid.style.display=open?"grid":"none";
-  document.getElementById("toggleList").textContent=open?"📁 카드 접기":"📂 카드 전체 보기";
+let listOpen=false;
+document.getElementById('toggleList').onclick=()=>{
+  listOpen=!listOpen; grid.style.display=listOpen?'grid':'none';
+  document.getElementById('toggleList').textContent=listOpen?'📁 카드 접기':'📂 카드 전체 보기';
 };
-document.getElementById("search").oninput=e=>{
+document.getElementById('search').oninput=(e)=>{
   const v=e.target.value.toLowerCase();
-  loadList(CARDS.filter(c=>c.code.toLowerCase().includes(v)||c.kr.includes(v)||(c.num+"").includes(v)));
+  renderList(CARDS.filter(c=>c.code.toLowerCase().includes(v)||c.kr.includes(v)||(c.num+'')===v));
 };
-toggleQ.onchange=()=>{inputQ.style.display=toggleQ.checked?"block":"none";
-  if(!toggleQ.checked){inputQ.value="";qBox.textContent="";}};
 
-/* 5카드 총평 */
-function buildFiveSummary(cards,q){
-  const pos=cards.filter(c=>c.type==='positive').length;
-  const neg=cards.filter(c=>c.type==='negative').length;
-  const neu=cards.filter(c=>c.type==='neutral').length;
-  let tone=pos>neg?`전체 톤: 🔵 우호적 (긍정 ${pos} / 부정 ${neg} / 중립 ${neu})`
-      :neg>pos?`전체 톤: 🔴 신중(보수) (긍정 ${pos} / 부정 ${neg} / 중립 ${neu})`
-      :`전체 톤: 🟢 균형(중립) (긍정 ${pos} / 부정 ${neg} / 중립 ${neu})`;
-  const has=n=>cards.some(c=>c.code===n);
-  const highlights=[];
-  if(has('Sun')||has('Key')||has('Bouquet')) highlights.push(`추진 신호 — 결과 가시화 / 해결의 실마리`);
-  if(has('Mountain')||has('Scythe')||has('Coffin')||has('Snake')||has('Cloud')) highlights.push(`리스크 — 지연·단절·혼선, 일정 조정`);
-  if(has('Ring')||has('Letter')||has('Garden')||has('Tower')) highlights.push(`계약·문서·공적 영역 체크`);
-  if(has('Fish')||has('Bear')||has('Anchor')) highlights.push(`재정/자원/지속가능성 점검`);
-  let advice='';
-  if(neg>pos){advice='권고: 리스크 우선 정리. 정보 재확인·일정 조정 후 작은 성과부터.'; if(has('Crossroad')) advice+=' 선택 단순화가 유리.'; if(has('Fox')) advice+=' 계약·문구 세부 확인.';}
-  else if(pos>neg){advice='권고: 우호적. 들어온 제안/연락 활용, 속도 내기.'; if(has('Rider')) advice+=' 빠른 응답이 기회.'; if(has('Stork')) advice+=' 구조·습관 업데이트.';}
-  else {advice='권고: 당장 결론보다 데이터 정리·우선순위 세팅.'; if(has('Book')) advice+=' 추가 자료 확보로 확신도 상승.';}
-  const qline=(q&&q.trim())?`질문: “${q.trim()}”`:'';
-  return `<div><strong>${tone}</strong></div>${qline?`<div style="margin-top:4px">${qline}</div>`:''}
-          ${highlights.length?'<ul style="margin:6px 0 0 18px">'+highlights.map(h=>`<li>${h}</li>`).join('')+'</ul>':''}
-          <div style="margin-top:6px">${advice}</div>`;
-}
+/* 질문 토글 */
+const toggleQ=document.getElementById('toggleQ');
+const inputQ=document.getElementById('inputQ');
+const qBox=document.getElementById('qBox');
+toggleQ.onchange=()=>{inputQ.style.display=toggleQ.checked?'block':'none'; if(!toggleQ.checked){inputQ.value=''; qBox.textContent='';}};
 
-/* 뽑기 */
-function pick(n){
-  const arr=[]; for(let i=0;i<n;i++) arr.push(CARDS[Math.floor(Math.random()*CARDS.length)]);
-  qBox.textContent=(toggleQ.checked&&inputQ.value.trim())?`질문: ${inputQ.value.trim()}`:'';
+/* ---------- 1/3/5 & 총평 ---------- */
+const drawArea=document.getElementById('drawArea'); const sumBox=document.getElementById('drawSummary');
+function pickN(n){
+  const arr=Array.from({length:n},()=>CARDS[Math.floor(Math.random()*CARDS.length)]);
   drawArea.className='draw-result'; drawArea.innerHTML='';
-  const sum=document.getElementById("drawSummary"); sum.classList.add("hidden"); sum.innerHTML="";
-  if(n===3) drawArea.classList.add("triple");
-  if(n===5) drawArea.classList.add("five");
+  if(n===3) drawArea.classList.add('triple'); if(n===5) drawArea.classList.add('five');
+  if(toggleQ.checked && inputQ.value.trim()) qBox.textContent=`질문: ${inputQ.value.trim()}`; else qBox.textContent='';
   arr.forEach(c=>{
-    const el=document.createElement("div");
-    el.className="card-mini "+tClass(c.type);
-    el.innerHTML=`<span class="type-badge">${tEmoji(c.type)}</span>
-                  <div class="img-box"><img src="${imgPath(c.num)}" alt="${c.code}"></div>
-                  <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
-                  <p><em>${c.key}</em> — ${c.add}</p>`;
-    drawArea.appendChild(el);
+    const d=document.createElement('div');
+    d.className=`card-mini ${C(c.type)}`;
+    d.innerHTML=`<span class="badge">${T(c.type)}</span>
+      <div class="img-box"><img src="${src(c.num)}" alt="${c.code}"></div>
+      <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
+      <p><em>${c.key}</em> — ${c.add}</p>`;
+    drawArea.appendChild(d);
   });
-  if(n===5){sum.innerHTML=buildFiveSummary(arr,(toggleQ.checked?inputQ.value:''));sum.classList.remove("hidden");}
+  if(n===5){
+    const pos=arr.filter(x=>x.type==='positive').length, neg=arr.filter(x=>x.type==='negative').length, neu=arr.length-pos-neg;
+    let tone= pos>neg ? `🔵 우호적 (긍정 ${pos}/부정 ${neg}/중립 ${neu})`
+         : neg>pos ? `🔴 신중 (긍정 ${pos}/부정 ${neg}/중립 ${neu})`
+         : `🟢 균형 (긍정 ${pos}/부정 ${neg}/중립 ${neu})`;
+    const has=n=>arr.some(x=>x.num===n);
+    const pts=[];
+    if(has(31)||has(33)||has(9)) pts.push('추진 신호 — 결과 가시화/해결 실마리');
+    if(has(21)||has(10)||has(8)||has(7)||has(6)) pts.push('리스크 — 지연·단절·혼선, 일정 조정');
+    if(has(25)||has(27)||has(20)||has(19)) pts.push('계약·문서·공적 영역 체크');
+    if(has(34)||has(15)||has(35)) pts.push('재정/자원/지속가능성 점검');
+    let advice = neg>pos ? '리스크 우선 정리, 정보 재확인·일정 조정 후 작은 성과부터.'
+                         : pos>neg ? '들어온 제안/연락 활용, 속도 내기.' :
+                                     '데이터 정리·우선순위 세팅으로 확신도 확보.';
+    sumBox.innerHTML = `<strong>전체 톤:</strong> ${tone}`+(pts.length?`<ul>${pts.map(p=>`<li>${p}</li>`).join('')}</ul>`:'')+`<div>${advice}</div>`;
+    sumBox.classList.remove('hidden');
+  }else sumBox.classList.add('hidden');
 }
-document.getElementById("btn1").onclick=()=>pick(1);
-document.getElementById("btn3").onclick=()=>pick(3);
-document.getElementById("btn5").onclick=()=>pick(5);
+document.getElementById('btn1').onclick=()=>pickN(1);
+document.getElementById('btn3').onclick=()=>pickN(3);
+document.getElementById('btn5').onclick=()=>pickN(5);
 
-/* 십자 스프레드 (상자 내부 고정) */
-document.getElementById("btnCross").onclick=()=>{
-  const arr=[]; for(let i=0;i<5;i++) arr.push(CARDS[Math.floor(Math.random()*CARDS.length)]);
-  const role=["현재/핵심","장애","본질","조언","결과"];
-  document.getElementById("drawSummary").classList.add("hidden");
-  drawArea.className='draw-result'; /* 기존 grid 제거 */
-  drawArea.innerHTML=`<div class="cross-wrap">
+/* ---------- 십자 스프레드 ---------- */
+document.getElementById('btnCross').onclick=()=>{
+  const role=['현재/핵심','장애','본질','조언','결과'];
+  const arr=Array.from({length:5},()=>CARDS[Math.floor(Math.random()*CARDS.length)]);
+  drawArea.className='draw-result'; sumBox.classList.add('hidden');
+  drawArea.innerHTML = `<div class="cross-wrap">
     ${arr.map((c,i)=>`
-      <div class="card-mini ${tClass(c.type)} pos${i+1}">
-        <span class="type-badge">${tEmoji(c.type)}</span>
-        <div class="img-box"><img src="${imgPath(c.num)}" alt="${c.code}"></div>
+      <div class="card-mini ${C(c.type)} pos${i+1}">
+        <span class="badge">${T(c.type)}</span>
+        <div class="img-box"><img src="${src(c.num)}" alt="${c.code}"></div>
         <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
         <p><em>${role[i]}</em> — ${c.key}, ${c.add}</p>
       </div>`).join('')}
   </div>`;
 };
 
-/* 그랑타블로 9×4 */
-const byNum=new Map(CARDS.map(c=>[c.num,c]));
+/* ---------- 그랑타블로 ---------- */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-document.getElementById("btnGT94").onclick=()=>{
-  const order=shuffle([...Array(36)].map((_,i)=>i+1));
-  document.getElementById("drawSummary").classList.add("hidden");
-  drawArea.className='draw-result';
-  drawArea.innerHTML=`<div class="gt-grid gt-9x4">
-    ${order.map(n=>{const c=byNum.get(n);return `
-      <div class="card-mini gt-card">
-        <div class="img-box"><img src="${imgPath(c.num)}" alt="${c.code}"></div>
-        <p class="gt-title"><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
-      </div>`}).join("")}
-  </div>`;
-};
-
-/* 그랑타블로 8×4+4 */
-document.getElementById("btnGT84").onclick=()=>{
-  const order=shuffle([...Array(36)].map((_,i)=>i+1));
-  document.getElementById("drawSummary").classList.add("hidden");
-  drawArea.className='draw-result';
-  const top=order.slice(0,32), last=order.slice(32);
-  drawArea.innerHTML=`
-    <div class="gt-grid gt-8x4">
-      ${top.map(n=>{const c=byNum.get(n);return `
-        <div class="card-mini gt-card">
-          <div class="img-box"><img src="${imgPath(c.num)}" alt="${c.code}"></div>
-          <p class="gt-title"><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
-        </div>`}).join("")}
-    </div>
-    <div class="gt-grid gt-last4">
-      ${last.map(n=>{const c=byNum.get(n);return `
-        <div class="card-mini gt-card">
-          <div class="img-box"><img src="${imgPath(c.num)}" alt="${c.code}"></div>
-          <p class="gt-title"><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
-        </div>`}).join("")}
+function renderGT(order, cols, rows, essenceLast4=false){
+  drawArea.className='draw-result'; sumBox.classList.add('hidden');
+  const gridHTML = `
+    <div class="gt-wrap">
+      <div class="gt-toolbar">카드를 눌러 <strong>키 카드</strong>의 <u>주위 카드</u>와 <u>나이팅</u>을 확인하세요.</div>
+      <div class="gt-scroll">
+        <div class="gt-grid" style="grid-template-columns:repeat(${cols}, var(--card-w))" id="gtGrid">
+          ${order.slice(0, cols*rows).map((n,i)=>{const c=byNum.get(n);return `
+            <div class="card-mini gt-card" data-idx="${i}" data-num="${c.num}">
+              <div class="img-box"><img src="${src(c.num)}" alt="${c.code}"></div>
+              <p class="gt-title"><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
+            </div>`}).join('')}
+        </div>
+      </div>
+      ${essenceLast4?`
+      <div class="gt-toolbar">아래는 <strong>에센스 4장</strong> 요약</div>
+      <div class="gt-scroll">
+        <div class="gt-grid" style="grid-template-columns:repeat(4, var(--card-w))" id="gtEss">
+          ${order.slice(cols*rows).map(n=>{const c=byNum.get(n);return `
+            <div class="card-mini gt-card">
+              <div class="img-box"><img src="${src(c.num)}" alt="${c.code}"></div>
+              <p class="gt-title"><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
+            </div>`}).join('')}
+        </div>
+      </div>`:''}
+      <div class="sidepanel" id="gtInfo">키 카드를 선택하면 해석이 여기에 표시됩니다.</div>
     </div>`;
+  drawArea.innerHTML = gridHTML;
+
+  // 클릭 해석
+  const gridEl=document.getElementById('gtGrid');
+  const info=document.getElementById('gtInfo');
+  gridEl.querySelectorAll('.gt-card').forEach(el=>{
+    el.onclick=()=>{
+      gridEl.querySelectorAll('.gt-card').forEach(x=>x.classList.remove('hl'));
+      el.classList.add('hl');
+
+      const idx=+el.dataset.idx;
+      const toRC=(i)=>({r:Math.floor(i/cols), c:i%cols});
+      const toIdx=(r,c)=> (r>=0&&r<rows&&c>=0&&c<cols)? r*cols+c : -1;
+      const pos=toRC(idx);
+
+      // 주변 8방향
+      const aroundIdx=[
+        toIdx(pos.r-1,pos.c-1),toIdx(pos.r-1,pos.c),toIdx(pos.r-1,pos.c+1),
+        toIdx(pos.r,pos.c-1),                   toIdx(pos.r,pos.c+1),
+        toIdx(pos.r+1,pos.c-1),toIdx(pos.r+1,pos.c),toIdx(pos.r+1,pos.c+1)
+      ].filter(i=>i>=0);
+      const aroundCards=aroundIdx.map(i=>byNum.get(+gridEl.querySelector(`.gt-card[data-idx="${i}"]`).dataset.num));
+
+      // 나이팅(2칸+1칸)
+      const knightD=[[ -2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+      const knightIdx=knightD.map(([dr,dc])=>toIdx(pos.r+dr,pos.c+dc)).filter(i=>i>=0);
+      const knightCards=knightIdx.map(i=>byNum.get(+gridEl.querySelector(`.gt-card[data-idx="${i}"]`).dataset.num));
+
+      const key = byNum.get(+el.dataset.num);
+      const list = (title,arr)=> `<div><strong>${title} (${arr.length})</strong> — ${arr.map(c=>`${c.num}.${c.code}`).join(', ')||'없음'}</div>`;
+      info.innerHTML = `<strong>키 카드:</strong> ${key.num}. ${key.code} (${key.kr}) — <em>${key.key}</em><br>
+        ${list('주위 카드', aroundCards)}
+        ${list('나이팅', knightCards)}`;
+
+      // 에센스 해석(8×4+4 전용)
+      if(essenceLast4){
+        const ess = order.slice(cols*rows).map(n=>byNum.get(n));
+        const posCnt=ess.filter(x=>x.type==='positive').length, negCnt=ess.filter(x=>x.type==='negative').length;
+        const tone = posCnt>negCnt?'🔵 우호적':negCnt>posCnt?'🔴 신중':'🟢 균형';
+        const hint = ess.some(x=>x.num===33||x.num===31)?'해결/가시화 흐름 유리.':'추가 데이터 확보가 중요.';
+        info.innerHTML += `<hr><div><strong>에센스 톤:</strong> ${tone} — ${ess.map(c=>`${T(c.type)} ${c.code}`).join(' · ')}</div>
+        <div>요약: ${hint}</div>`;
+      }
+    };
+  });
+
+  // 에센스 총평(자동)
+  if(essenceLast4){
+    const ess=order.slice(cols*rows).map(n=>byNum.get(n));
+    const pos=ess.filter(x=>x.type==='positive').length, neg=ess.filter(x=>x.type==='negative').length;
+    const tone= pos>neg?'🔵 우호적':neg>pos?'🔴 신중':'🟢 균형';
+    const pts=[];
+    if(ess.some(x=>[31,33,9].includes(x.num))) pts.push('결과 가시화/해결의 실마리');
+    if(ess.some(x=>[21,10,8,7,6].includes(x.num))) pts.push('리스크 관리·일정 조정');
+    document.getElementById('gtInfo').innerHTML = `<strong>에센스 4장 총평:</strong> ${tone}${pts.length?` — ${pts.join(' · ')}`:''}<br>
+    클릭으로 키 카드 주위·나이팅을 확인하세요.`;
+  }
+}
+
+document.getElementById('btnGT94').onclick=()=>{
+  const order=shuffle([...Array(36)].map((_,i)=>i+1));
+  renderGT(order,9,4,false); // 9x4
+};
+document.getElementById('btnGT84').onclick=()=>{
+  const order=shuffle([...Array(36)].map((_,i)=>i+1));
+  renderGT(order,8,4,true);  // 8x4 + essence
 };
 </script>
 </body>
 </html>
-
