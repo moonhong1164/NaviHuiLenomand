@@ -18,14 +18,14 @@ h1{margin:0;font-size:22px;color:#493c7b}
 .container{max-width:1150px;margin:0 auto;padding:16px}
 .btn{background:var(--panel);border:1px solid var(--ring);padding:8px 14px;border-radius:10px;cursor:pointer}
 .card,.card-mini{background:var(--panel2);border:1px solid var(--ring);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px;position:relative}
-.badge{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 6px;border-radius:999px;background:rgba(0,0,0,.2);color:#fff}
+.badge{position:absolute;top:6px;right:6px;font-size:12px;padding:2px 6px;border-radius:999px;background:rgba(0,0,0,.25);color:#fff}
 .img-box{width:100%;aspect-ratio:3/4;background:#fff;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .img-box img{width:100%;height:100%;object-fit:contain}
 .card-positive{border:2px solid #4cc3ff}
 .card-negative{border:2px solid #ff6b6b}
 .card-neutral{border:2px solid #7df58e}
 
-.drawbox{background:var(--panel);border:1px solid var(--ring);border-radius:14px;padding:14px;box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
+.drawbox{background:var(--panel);border:1px solid var(--ring);border-radius:14px;padding:14px;box-shadow:var(--shadow);margin-bottom:16px;/* overflow:visible (가로 스크롤 위해) */}
 .draw-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .draw-result{display:grid;gap:12px;margin-top:12px}
 .triple{grid-template-columns:repeat(3,1fr)}
@@ -33,7 +33,7 @@ h1{margin:0;font-size:22px;color:#493c7b}
 #drawSummary{margin-top:10px;border:1px dashed var(--ring);padding:10px;border-radius:10px;background:var(--panel2);box-shadow:var(--shadow);color:var(--muted)}
 .hidden{display:none}
 
-/* ── 십자 스프레드: 박스 내부 균등 축소 ── */
+/* ── 십자 스프레드 ── */
 .cross-wrap{
   --cross-min:140px;
   display:grid;
@@ -46,15 +46,28 @@ h1{margin:0;font-size:22px;color:#493c7b}
 }
 .pos1{grid-area:top}.pos2{grid-area:left}.pos3{grid-area:center}.pos4{grid-area:right}.pos5{grid-area:bottom}
 
-/* ── 그랑타블로: 통일 크기 + 가로 스크롤 ── */
+/* ── 그랑타블로: 가로 스크롤 필수 스타일 ── */
 .gt-wrap{border:1px solid var(--ring);border-radius:14px;background:var(--panel2);box-shadow:var(--shadow);padding:10px}
-.gt-scroll{overflow-x:auto;padding-bottom:8px}
-.gt-grid{display:grid;gap:8px;justify-content:start}
+.gt-toolbar{display:flex;gap:8px;align-items:center;margin:8px 0;color:var(--muted)}
+.gt-scroll{
+  overflow-x:auto; overflow-y:hidden;
+  -webkit-overflow-scrolling:touch; touch-action:pan-x;
+  scrollbar-width:thin; padding-bottom:8px;
+}
+.gt-scroll::-webkit-scrollbar{height:8px}
+.gt-scroll::-webkit-scrollbar-thumb{background:#cbbaf3;border-radius:8px}
+.gt-grid{
+  display:inline-grid;               /* 핵심: 내용 크기만큼만 */
+  width:max-content;                 /* 핵심: 총 카드 폭으로 결정 */
+  gap:8px; justify-content:start;
+}
 .gt-card{width:var(--card-w)}
 .gt-title{margin:6px 0 0;font-size:14px}
-.gt-toolbar{display:flex;gap:8px;align-items:center;margin:8px 0;color:var(--muted)}
 .hl{outline:3px solid #6b7bff;outline-offset:2px}
 .sidepanel{margin-top:10px;border:1px dashed var(--ring);border-radius:10px;background:var(--panel2);box-shadow:var(--shadow);padding:10px}
+
+/* 카드 전체 보기 그리드 */
+.grid{display:grid;gap:14px;padding:16px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
 
 /* 반응형 */
 @media (max-width:1100px){ :root{--card-w:160px} .triple{gap:10px} .cross-wrap{--cross-min:130px} }
@@ -91,12 +104,12 @@ h1{margin:0;font-size:22px;color:#493c7b}
 </footer>
 
 <script>
-/* ---------- 데이터/유틸 ---------- */
+/* ---------- 유틸/데이터 ---------- */
 function src(num){const n=String(num).padStart(2,'0');return `images/레노먼드-${n}.png`}
 const T = (t)=> t==='positive'?'🔵':(t==='negative'?'🔴':'🟢');
 const C = (t)=> t==='positive'?'card-positive':(t==='negative'?'card-negative':'card-neutral');
 
-const CARDS=[ /* 간결 요약 + 추가 코멘트 + 톤 */
+const CARDS=[
   {num:1,code:"Rider",kr:"기수",key:"소식·이동",add:"빠른 변화·연락 도착",type:"positive"},
   {num:2,code:"Clover",kr:"클로버",key:"행운·기회",add:"짧은 찬스·시도 좋음",type:"positive"},
   {num:3,code:"Ship",kr:"선박",key:"여행·확장",add:"관계·환경 변화",type:"neutral"},
@@ -129,12 +142,11 @@ const CARDS=[ /* 간결 요약 + 추가 코멘트 + 톤 */
   {num:30,code:"Lily",kr:"백합",key:"평화·성숙",add:"휴식·품위",type:"positive"},
   {num:31,code:"Sun",kr:"태양",key:"성공·활력",add:"긍정 결과",type:"positive"},
   {num:32,code:"Moon",kr:"달",key:"명예·감정",add:"감정 리듬",type:"positive"},
-  {num:33,code:"Key",kr:"열쇠",key2:"",key:"해결·정답",add:"돌파구",type:"positive"},
+  {num:33,code:"Key",kr:"열쇠",key:"해결·정답",add:"돌파구",type:"positive"},
   {num:34,code:"Fish",kr:"물고기",key:"재물·교류",add:"교류·거래 증가",type:"neutral"},
   {num:35,code:"Anchor",kr:"닻",key:"안정·고정",add:"지속성",type:"neutral"},
   {num:36,code:"Cross",kr:"십자가",key:"고난·신념",add:"책임·버티기",type:"negative"},
 ];
-
 const byNum=new Map(CARDS.map(c=>[c.num,c]));
 
 /* ---------- 목록 ---------- */
@@ -256,7 +268,6 @@ function renderGT(order, cols, rows, essenceLast4=false){
     </div>`;
   drawArea.innerHTML = gridHTML;
 
-  // 클릭 해석
   const gridEl=document.getElementById('gtGrid');
   const info=document.getElementById('gtInfo');
   gridEl.querySelectorAll('.gt-card').forEach(el=>{
@@ -269,7 +280,6 @@ function renderGT(order, cols, rows, essenceLast4=false){
       const toIdx=(r,c)=> (r>=0&&r<rows&&c>=0&&c<cols)? r*cols+c : -1;
       const pos=toRC(idx);
 
-      // 주변 8방향
       const aroundIdx=[
         toIdx(pos.r-1,pos.c-1),toIdx(pos.r-1,pos.c),toIdx(pos.r-1,pos.c+1),
         toIdx(pos.r,pos.c-1),                   toIdx(pos.r,pos.c+1),
@@ -277,7 +287,6 @@ function renderGT(order, cols, rows, essenceLast4=false){
       ].filter(i=>i>=0);
       const aroundCards=aroundIdx.map(i=>byNum.get(+gridEl.querySelector(`.gt-card[data-idx="${i}"]`).dataset.num));
 
-      // 나이팅(2칸+1칸)
       const knightD=[[ -2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
       const knightIdx=knightD.map(([dr,dc])=>toIdx(pos.r+dr,pos.c+dc)).filter(i=>i>=0);
       const knightCards=knightIdx.map(i=>byNum.get(+gridEl.querySelector(`.gt-card[data-idx="${i}"]`).dataset.num));
@@ -288,7 +297,6 @@ function renderGT(order, cols, rows, essenceLast4=false){
         ${list('주위 카드', aroundCards)}
         ${list('나이팅', knightCards)}`;
 
-      // 에센스 해석(8×4+4 전용)
       if(essenceLast4){
         const ess = order.slice(cols*rows).map(n=>byNum.get(n));
         const posCnt=ess.filter(x=>x.type==='positive').length, negCnt=ess.filter(x=>x.type==='negative').length;
@@ -300,7 +308,6 @@ function renderGT(order, cols, rows, essenceLast4=false){
     };
   });
 
-  // 에센스 총평(자동)
   if(essenceLast4){
     const ess=order.slice(cols*rows).map(n=>byNum.get(n));
     const pos=ess.filter(x=>x.type==='positive').length, neg=ess.filter(x=>x.type==='negative').length;
@@ -315,11 +322,11 @@ function renderGT(order, cols, rows, essenceLast4=false){
 
 document.getElementById('btnGT94').onclick=()=>{
   const order=shuffle([...Array(36)].map((_,i)=>i+1));
-  renderGT(order,9,4,false); // 9x4
+  renderGT(order,9,4,false);
 };
 document.getElementById('btnGT84').onclick=()=>{
   const order=shuffle([...Array(36)].map((_,i)=>i+1));
-  renderGT(order,8,4,true);  // 8x4 + essence
+  renderGT(order,8,4,true);
 };
 </script>
 </body>
