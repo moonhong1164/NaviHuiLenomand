@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NAVI&HUI LENORMAND </title>
+<title>NAVI&HUI LENORMAND</title>
 <style>
 :root{
   --bg:#ede6ff; --panel:#f7f2ff; --panel2:#fff; --text:#3c2f62;
@@ -25,7 +25,7 @@ h1{margin:0;font-size:22px;color:#493c7b}
 .card-negative{border:2px solid #ff6b6b}
 .card-neutral{border:2px solid #7df58e}
 
-.drawbox{background:var(--panel);border:1px solid var(--ring);border-radius:14px;padding:14px;box-shadow:var(--shadow);margin-bottom:16px;/* overflow:visible (가로 스크롤 위해) */}
+.drawbox{background:var(--panel);border:1px solid var(--ring);border-radius:14px;padding:14px;box-shadow:var(--shadow);margin-bottom:16px}
 .draw-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .draw-result{display:grid;gap:12px;margin-top:12px}
 .triple{grid-template-columns:repeat(3,1fr)}
@@ -46,21 +46,13 @@ h1{margin:0;font-size:22px;color:#493c7b}
 }
 .pos1{grid-area:top}.pos2{grid-area:left}.pos3{grid-area:center}.pos4{grid-area:right}.pos5{grid-area:bottom}
 
-/* ── 그랑타블로: 가로 스크롤 필수 스타일 ── */
+/* ── 그랑타블로: 데스크톱=스크롤, 모바일=자동 축소 ── */
 .gt-wrap{border:1px solid var(--ring);border-radius:14px;background:var(--panel2);box-shadow:var(--shadow);padding:10px}
 .gt-toolbar{display:flex;gap:8px;align-items:center;margin:8px 0;color:var(--muted)}
-.gt-scroll{
-  overflow-x:auto; overflow-y:hidden;
-  -webkit-overflow-scrolling:touch; touch-action:pan-x;
-  scrollbar-width:thin; padding-bottom:8px;
-}
+.gt-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-x;scrollbar-width:thin;padding-bottom:8px}
 .gt-scroll::-webkit-scrollbar{height:8px}
 .gt-scroll::-webkit-scrollbar-thumb{background:#cbbaf3;border-radius:8px}
-.gt-grid{
-  display:inline-grid;               /* 핵심: 내용 크기만큼만 */
-  width:max-content;                 /* 핵심: 총 카드 폭으로 결정 */
-  gap:8px; justify-content:start;
-}
+.gt-grid{display:inline-grid;width:max-content;gap:8px;justify-content:start}
 .gt-card{width:var(--card-w)}
 .gt-title{margin:6px 0 0;font-size:14px}
 .hl{outline:3px solid #6b7bff;outline-offset:2px}
@@ -75,7 +67,7 @@ h1{margin:0;font-size:22px;color:#493c7b}
 </style>
 </head>
 <body>
-<header><h1>NABY LENORMAND ORACLE</h1></header>
+<header><h1>NAVI&amp;HUI LENORMAND</h1></header>
 
 <div class="container">
   <section class="drawbox">
@@ -100,7 +92,7 @@ h1{margin:0;font-size:22px;color:#493c7b}
 </div>
 
 <footer class="container" style="padding:40px 8px;text-align:center;color:var(--muted);border-top:1px solid var(--ring);margin-top:30px">
-  자료 출처: NABY LENORMAND ORACLE CARD<br>제작 : 나비🦋, 월홍🌙
+  자료 출처: NAVI&amp;HUI LENORMAND ORACLE CARD<br>제작 : 나비🦋, 월홍🌙
 </footer>
 
 <script>
@@ -142,7 +134,7 @@ const CARDS=[
   {num:30,code:"Lily",kr:"백합",key:"평화·성숙",add:"휴식·품위",type:"positive"},
   {num:31,code:"Sun",kr:"태양",key:"성공·활력",add:"긍정 결과",type:"positive"},
   {num:32,code:"Moon",kr:"달",key:"명예·감정",add:"감정 리듬",type:"positive"},
-  {num:33,code:"Key",kr:"열쇠",key:"해결·정답",add:"돌파구",type:"positive"},
+  {num:33,code:"Key",kr:"열쇠",key2:"해결·정답",add:"돌파구",type:"positive"},
   {num:34,code:"Fish",kr:"물고기",key:"재물·교류",add:"교류·거래 증가",type:"neutral"},
   {num:35,code:"Anchor",kr:"닻",key:"안정·고정",add:"지속성",type:"neutral"},
   {num:36,code:"Cross",kr:"십자가",key:"고난·신념",add:"책임·버티기",type:"negative"},
@@ -160,7 +152,7 @@ function renderList(list){
       <span class="badge">${T(c.type)}</span>
       <div class="img-box"><img src="${src(c.num)}" alt="${c.code}"></div>
       <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
-      <p><em>${c.key}</em> — ${c.add}</p>`;
+      <p><em>${c.key||c.key2}</em> — ${c.add}</p>`;
     grid.appendChild(el);
   });
 }
@@ -195,7 +187,7 @@ function pickN(n){
     d.innerHTML=`<span class="badge">${T(c.type)}</span>
       <div class="img-box"><img src="${src(c.num)}" alt="${c.code}"></div>
       <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
-      <p><em>${c.key}</em> — ${c.add}</p>`;
+      <p><em>${c.key||c.key2}</em> — ${c.add}</p>`;
     drawArea.appendChild(d);
   });
   if(n===5){
@@ -231,18 +223,36 @@ document.getElementById('btnCross').onclick=()=>{
         <span class="badge">${T(c.type)}</span>
         <div class="img-box"><img src="${src(c.num)}" alt="${c.code}"></div>
         <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
-        <p><em>${role[i]}</em> — ${c.key}, ${c.add}</p>
+        <p><em>${role[i]}</em> — ${c.key||c.key2}, ${c.add}</p>
       </div>`).join('')}
   </div>`;
 };
 
-/* ---------- 그랑타블로 ---------- */
+/* ---------- 그랑타블로 (모바일 화면맞춤 포함) ---------- */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function fitToScreen(gtWrap){
+  if (window.innerWidth > 768) return;
+  const scroll = gtWrap.querySelector('.gt-scroll');
+  const grid   = gtWrap.querySelector('.gt-grid');
+  grid.style.transform = 'none';
+  grid.style.transformOrigin = 'top left';
+  scroll.style.height = '';
+  const rect = scroll.getBoundingClientRect();
+  const availW = scroll.clientWidth;
+  const availH = Math.max(260, window.innerHeight - rect.top - 20);
+  const needW = grid.scrollWidth;
+  const needH = grid.scrollHeight;
+  const scale = Math.min(availW / needW, availH / needH, 1);
+  grid.style.transform = `scale(${scale})`;
+  scroll.style.overflow = 'hidden';
+  scroll.style.height = `${needH * scale + 8}px`;
+}
 
 function renderGT(order, cols, rows, essenceLast4=false){
   drawArea.className='draw-result'; sumBox.classList.add('hidden');
   const gridHTML = `
-    <div class="gt-wrap">
+    <div class="gt-wrap" id="gtWrap">
       <div class="gt-toolbar">카드를 눌러 <strong>키 카드</strong>의 <u>주위 카드</u>와 <u>나이팅</u>을 확인하세요.</div>
       <div class="gt-scroll">
         <div class="gt-grid" style="grid-template-columns:repeat(${cols}, var(--card-w))" id="gtGrid">
@@ -255,7 +265,7 @@ function renderGT(order, cols, rows, essenceLast4=false){
       </div>
       ${essenceLast4?`
       <div class="gt-toolbar">아래는 <strong>에센스 4장</strong> 요약</div>
-      <div class="gt-scroll">
+      <div class="gt-scroll" id="gtEssScroll">
         <div class="gt-grid" style="grid-template-columns:repeat(4, var(--card-w))" id="gtEss">
           ${order.slice(cols*rows).map(n=>{const c=byNum.get(n);return `
             <div class="card-mini gt-card">
@@ -293,20 +303,16 @@ function renderGT(order, cols, rows, essenceLast4=false){
 
       const key = byNum.get(+el.dataset.num);
       const list = (title,arr)=> `<div><strong>${title} (${arr.length})</strong> — ${arr.map(c=>`${c.num}.${c.code}`).join(', ')||'없음'}</div>`;
-      info.innerHTML = `<strong>키 카드:</strong> ${key.num}. ${key.code} (${key.kr}) — <em>${key.key}</em><br>
+      info.innerHTML = `<strong>키 카드:</strong> ${key.num}. ${key.code} (${key.kr}) — <em>${key.key||key.key2}</em><br>
         ${list('주위 카드', aroundCards)}
         ${list('나이팅', knightCards)}`;
-
-      if(essenceLast4){
-        const ess = order.slice(cols*rows).map(n=>byNum.get(n));
-        const posCnt=ess.filter(x=>x.type==='positive').length, negCnt=ess.filter(x=>x.type==='negative').length;
-        const tone = posCnt>negCnt?'🔵 우호적':negCnt>posCnt?'🔴 신중':'🟢 균형';
-        const hint = ess.some(x=>x.num===33||x.num===31)?'해결/가시화 흐름 유리.':'추가 데이터 확보가 중요.';
-        info.innerHTML += `<hr><div><strong>에센스 톤:</strong> ${tone} — ${ess.map(c=>`${T(c.type)} ${c.code}`).join(' · ')}</div>
-        <div>요약: ${hint}</div>`;
-      }
     };
   });
+
+  const wrap = document.getElementById('gtWrap');
+  fitToScreen(wrap);
+  let rid;
+  window.addEventListener('resize', ()=>{ clearTimeout(rid); rid=setTimeout(()=>fitToScreen(wrap),150); }, {passive:true});
 
   if(essenceLast4){
     const ess=order.slice(cols*rows).map(n=>byNum.get(n));
