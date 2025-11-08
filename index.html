@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>NABY LENORMAND ORACLE</title>
+  <meta name="description" content="레노먼드 36장 카드: 검색, 1/3카드 뽑기, 질문 입력"/>
+  <style>
+    :root{
+      --bg:#0b0f14; --panel:#121823; --panel2:#0f141d; --text:#e8eef6; --muted:#9bb0c9; --ring:#334056;
+      --chip:#1a2332; --shadow:0 10px 30px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif}
+    header{position:sticky;top:0;z-index:10;background:rgba(10,15,22,.82);backdrop-filter:blur(8px);border-bottom:1px solid var(--ring)}
+    .container{max-width:1150px;margin:0 auto;padding:16px}
+    h1{margin:0;font-size:20px}
+
+    /* Buttons & inputs */
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;border:1px solid var(--ring);background:var(--panel);color:var(--text);cursor:pointer;text-decoration:none;font-size:14px}
+    input[type="search"],input[type="text"],select{width:100%;padding:10px 12px;margin:8px 0;border-radius:10px;border:1px solid var(--ring);background:var(--panel2);color:var(--text)}
+    .chip{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border:1px solid var(--ring);border-radius:999px;background:var(--chip);color:var(--muted);font-size:12px}
+
+    /* Card list */
+    .grid{display:grid;gap:14px;padding:14px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+    .card{background:var(--panel2);border:1px solid var(--ring);border-radius:12px;padding:12px}
+    .img-box{width:100%;aspect-ratio:3/4;background:#000;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;border:1px solid var(--ring)}
+    .img-box img{width:100%;height:100%;object-fit:contain}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+    /* Draw box */
+    .drawbox{background:var(--panel);border:1px solid var(--ring);border-radius:12px;padding:14px;margin:16px 0;box-shadow:var(--shadow)}
+    .draw-result{margin-top:12px;display:grid;gap:12px}
+    .card-mini{background:var(--panel2);border:1px solid var(--ring);border-radius:12px;padding:10px}
+    .draw-result.triple{grid-template-columns:repeat(3,1fr);gap:10px}
+    @media (max-width:600px){.draw-result.triple .card-mini{padding:8px}}
+
+    footer{color:var(--muted);padding:40px 16px;text-align:center;border-top:1px solid var(--ring)}
+  
+    /* ===== Grand Tableau styles ===== */
+    .gt-box{margin:18px 0;padding:14px;border:1px solid var(--ring);border-radius:12px;background:var(--panel);box-shadow:var(--shadow)}
+    .gt-grid{display:grid;gap:8px}
+    .gt-grid.cols-9{grid-template-columns:repeat(9,1fr)}
+    .gt-grid.cols-8{grid-template-columns:repeat(8,1fr)}
+    .gt-bottom4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:800px;margin:8px auto 0}
+    .gt-cell{position:relative;background:var(--panel2);border:1px solid var(--ring);border-radius:10px;padding:6px}
+    .gt-cell .img-box{aspect-ratio:3/4;background:#000;border:1px solid var(--ring);border-radius:8px;margin-bottom:6px}
+    .gt-meta{font-size:12px;color:var(--muted)}
+    .housechip{position:absolute;top:6px;left:6px;font-size:11px;padding:2px 6px;border-radius:999px;border:1px solid var(--ring);background:rgba(10,15,22,.8);color:#c7d7ee}
+    @media (max-width:900px){.gt-grid.cols-9{grid-template-columns:repeat(6,1fr)}.gt-grid.cols-8{grid-template-columns:repeat(6,1fr)}.gt-bottom4{grid-template-columns:repeat(4,1fr)}}
+    @media (max-width:640px){.gt-grid.cols-9{grid-template-columns:repeat(4,1fr)}.gt-grid.cols-8{grid-template-columns:repeat(4,1fr)}.gt-bottom4{grid-template-columns:repeat(4,1fr)}}
+  </style>
+</head>
+<body>
+<header><div class="container"><h1>NABY LENORMAND ORACLE</h1></div></header>
+<main class="container">
+  <section class="drawbox">
+    <div class="row" style="gap:10px">
+      <label class="chip"><input id="toggleQ" type="checkbox"> 질문 입력</label>
+      <button class="btn" id="btn1">🃏 1카드 뽑기</button>
+      <button class="btn" id="btn3">🃏🃏🃏 3카드 뽑기</button>
+    </div>
+    <input id="inputQ" type="text" placeholder="질문을 입력하세요 (선택)" style="display:none">
+    <div id="qBox" style="margin-top:6px;color:var(--muted)"></div>
+    <div id="drawArea" class="draw-result"></div>
+  </section>
+
+  <button class="btn" id="toggleList">📂 카드 전체 보기</button>
+  <input id="search" type="search" placeholder="카드 이름/한글/번호 검색">
+  <div id="grid" class="grid" style="display:none"></div>
+  
+  <!-- Grand Tableau Section -->
+  <section class="gt-box">
+    <div class="row" style="gap:10px;align-items:center">
+      <span class="chip">그랑따블로</span>
+      <button id="btnGT94" class="btn">🧩 9×4 펼치기</button>
+      <button id="btnGT84" class="btn">🧩 8×4＋4 펼치기</button>
+      <label class="chip"><input id="showHouses" type="checkbox" checked> 하우스 번호 표시</label>
+    </div>
+    <div id="gtArea" style="margin-top:12px"></div>
+  </section>
+
+</main>
+<footer>
+  자료 출처: NABY LENORMAND ORACLE<br>제작 : 나비🦋, 월홍🌙
+</footer>
+
+<script>
+// ===== 카드 데이터 =====
+// 이미지 파일명 형식: images/레노먼드-1.png ~ images/레노먼드-36.png
+const CARDS = [
+  {num:1,  code:"Rider",    kr:"기수",     key:"소식•이동",           add:"빠른 변화의 신호. 메시지/연락이 곧 도착."},
+  {num:2,  code:"Clover",   kr:"클로버",   key:"행운•기회",           add:"짧지만 반짝이는 찬스. 가볍게 시도해 보기."},
+  {num:3,  code:"Ship",     kr:"선박",     key:"여행•확장",           add:"환경/관계의 큰 전환. 시야를 넓힐 때."},
+  {num:4,  code:"House",    kr:"집",       key:"가정•안정",           add:"기반 다지기. 루틴과 안전망 재정비."},
+  {num:5,  code:"Tree",     kr:"나무",     key:"건강•성장",           add:"천천히 뿌리내림. 장기 관점에서 접근."},
+  {num:6,  code:"Cloud",    kr:"구름",     key:"혼란•불확실",         add:"정보가 흐림. 명확해질 때까지 보류/점검."},
+  {num:7,  code:"Snake",    kr:"뱀",       key:"유혹•기만",           add:"겉과 속이 다를 수 있음. 지혜롭게 우회."},
+  {num:8,  code:"Coffin",   kr:"관",       key:"끝•전환",             add:"한 주기의 종결. 정리 후 재출발 준비."},
+  {num:9,  code:"Bouquet",  kr:"부케",     key:"선물•기쁨",           add:"감사의 표현이 행운을 키움. 매력/호의 상승."},
+  {num:10, code:"Scythe",   kr:"낫",       key:"단절•결정",           add:"빠른 절단. 과감한 선택과 위험 관리가 관건."},
+  {num:11, code:"Whip",     kr:"채찍",     key:"갈등•반복",           add:"논쟁/루프 끊기. 에너지 소모 줄이기."},
+  {num:12, code:"Bird",     kr:"새",       key:"대화•소문",           add:"말이 많은 시기. 메시지 관리/팩트 체크."},
+  {num:13, code:"Child",    kr:"아이",     key:"새 시작•순수",         add:"가볍게 시작. 작지만 성장성이 큼."},
+  {num:14, code:"Fox",      kr:"여우",     key:"일/능력•의심",        add:"실리적으로 대응. 계약/정보 재확인."},
+  {num:15, code:"Bear",     kr:"곰",       key:"힘•보호",             add:"리더/후원자 등장. 재정/자원 관리 강화."},
+  {num:16, code:"Stars",    kr:"별",       key:"희망•목표",           add:"장기 비전 클리어. 네트워크/온라인 운 좋음."},
+  {num:17, code:"Stork",    kr:"황새",     key:"변화•개선",           add:"이동/개편 시즌. 습관을 좋은 쪽으로 업데이트."},
+  {num:18, code:"Dog",      kr:"개",       key:"신뢰•우정",           add:"동맹 강화. 도움을 주고받는 파트너십."},
+  {num:19, code:"Tower",    kr:"탑",       key:"제도•독립",           add:"공적 영역/규칙. 홀로서기와 경계 설정."},
+  {num:20, code:"Garden",   kr:"정원",     key:"모임•공개",           add:"커뮤니티/홍보에 유리. 오픈 네트워킹."},
+  {num:21, code:"Mountain", kr:"산",       key:"장애•지연",           add:"시간이 더 필요. 우회로/대체 플랜 마련."},
+  {num:22, code:"Crossroad",kr:"갈림길",   key:"선택•결정",           add:"복수 옵션 비교. 데이터 기반 의사결정."},
+  {num:23, code:"Mice",     kr:"쥐",       key:"손실•소모",           add:"새는 구멍 막기. 건강/자산 ‘미세누수’ 점검."},
+  {num:24, code:"Heart",    kr:"하트",     key:"사랑•감정",           add:"진심이 통하는 때. 열정/기쁨 회복."},
+  {num:25, code:"Ring",     kr:"반지",     key:"계약•순환",           add:"합의/약속의 시기. 장기적 커밋 확인."},
+  {num:26, code:"Book",     kr:"책",       key:"비밀•학습",           add:"자료 리서치. 아직 공개되지 않은 정보."},
+  {num:27, code:"Letter",   kr:"편지",     key:"연락•문서",           add:"서면 증거 확보. 제안/합격통지 가능성."},
+  {num:28, code:"Man",      kr:"남성",     key:"핵심 인물(남)",       add:"해당 남성이 사건의 키를 쥠."},
+  {num:29, code:"Woman",    kr:"여성",     key:"핵심 인물(여)",       add:"해당 여성이 사건의 키를 쥠."},
+  {num:30, code:"Lily",     kr:"백합",     key:"평화•성숙",           add:"품위/전문성. 성숙한 합의와 휴식."},
+  {num:31, code:"Sun",      kr:"태양",     key:"성공•활력",           add:"명확하고 긍정적 결과. 자신감 상승."},
+  {num:32, code:"Moon",     kr:"달",       key:"명예•감정",           add:"인정/브랜딩. 감정과 리듬 관리."},
+  {num:33, code:"Key",      kr:"열쇠",     key:"해결•정답",           add:"돌파구 발견. 문을 여는 결정적 열쇠."},
+  {num:34, code:"Fish",     kr:"물고기",   key:"재물•교류",           add:"현금흐름/거래 증가. 독립성 강화."},
+  {num:35, code:"Anchor",   kr:"닻",       key:"안정•고정",           add:"지속가능성. 일관된 루틴이 힘이 됨."},
+  {num:36, code:"Cross",    kr:"십자가",   key:"고난•신념",           add:"부담/책임. 믿음으로 버티는 시간."}
+];
+
+// ===== DOM =====
+const grid=document.getElementById('grid');
+const toggleList=document.getElementById('toggleList');
+const search=document.getElementById('search');
+const drawArea=document.getElementById('drawArea');
+const btn1=document.getElementById('btn1');
+const btn3=document.getElementById('btn3');
+const toggleQ=document.getElementById('toggleQ');
+const inputQ=document.getElementById('inputQ');
+const qBox=document.getElementById('qBox');
+
+// ===== 목록 렌더 =====
+function renderList(list){
+  grid.innerHTML='';
+  list.forEach(c=>{
+    const el=document.createElement('article');
+    el.className='card';
+    el.innerHTML = `
+      <div class="row"><span class="chip">${c.num}</span><span class="chip">${c.code}</span><span class="chip">${c.kr}</span></div>
+      <div class="img-box"><img src="images/레노먼드-${c.num}.png" alt="${c.num}. ${c.code}"/></div>
+      <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
+      <p><em>${c.key}</em> — ${c.add}</p>
+    `;
+    grid.appendChild(el);
+  });
+}
+renderList(CARDS);
+
+// ===== 목록 토글 =====
+let open=false;
+function setOpen(v){
+  open=!!v; grid.style.display=open?'grid':'none';
+  toggleList.textContent=open?'📁 카드 접기':'📂 카드 전체 보기';
+}
+setOpen(false);
+toggleList.addEventListener('click',()=>setOpen(!open));
+
+// ===== 검색 =====
+search.addEventListener('input', e=>{
+  const v=e.target.value.trim().toLowerCase();
+  const f=CARDS.filter(c=>`${c.num}`.includes(v)||c.code.toLowerCase().includes(v)||c.kr.includes(v));
+  renderList(f);
+});
+
+// ===== 뽑기 =====
+function pick(n){
+  const arr=[]; for(let i=0;i<n;i++){ arr.push(CARDS[Math.floor(Math.random()*CARDS.length)]); }
+  drawArea.classList.toggle('triple', n===3);
+  drawArea.innerHTML='';
+  if(toggleQ.checked && inputQ.value.trim()){
+    qBox.textContent = '질문: '+inputQ.value.trim();
+  } else { qBox.textContent=''; }
+  arr.forEach(c=>{
+    const el=document.createElement('article');
+    el.className='card-mini';
+    el.innerHTML=`
+      <div class="img-box"><img src="images/레노먼드-${c.num}.png" alt="${c.num}. ${c.code}"></div>
+      <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
+      <p><em>${c.key}</em> — ${c.add}</p>
+    `;
+    drawArea.appendChild(el);
+  });
+}
+btn1.addEventListener('click',()=>pick(1));
+btn3.addEventListener('click',()=>pick(3));
+
+// ===== 질문 입력 표시 =====
+toggleQ.addEventListener('change',()=>{
+  if(toggleQ.checked){ inputQ.style.display='block'; inputQ.focus(); }
+  else { inputQ.style.display='none'; inputQ.value=''; qBox.textContent=''; }
+});
+
+
+/* ======== Grand Tableau JS ======== */
+const btnGT94=document.getElementById('btnGT94');
+const btnGT84=document.getElementById('btnGT84');
+const gtArea=document.getElementById('gtArea');
+const showHouses=document.getElementById('showHouses');
+
+const byNum = new Map(CARDS.map(c=>[c.num,c]));
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+function dealOrder(){ return shuffle(Array.from({length:36},(_,i)=>i+1)); }
+function cellHTML(num, houseNo){
+  const c = byNum.get(num);
+  return `
+    <div class="gt-cell">
+      ${showHouses && showHouses.checked ? `<span class="housechip">H${houseNo}</span>` : ''}
+      <div class="img-box"><img src="images/레노먼드-${c.num}.png" alt="${c.num}. ${c.code}"></div>
+      <div class="gt-meta"><strong>${c.num}. ${c.code}</strong> (${c.kr}) — <em>${c.key}</em></div>
+    </div>`;
+}
+
+function renderGT94(){
+  const order=dealOrder();
+  const cells = order.map((num,idx)=>cellHTML(num, idx+1)).join('');
+  gtArea.innerHTML = `<div class="gt-grid cols-9">${cells}</div>`;
+}
+
+function renderGT84(){
+  const order=dealOrder();
+  const top32 = order.slice(0,32).map((num,idx)=>cellHTML(num, idx+1)).join('');
+  const last4 = order.slice(32).map((num,idx)=>cellHTML(num, 33+idx)).join('');
+  gtArea.innerHTML = `<div class="gt-grid cols-8">${top32}</div><div class="gt-bottom4">${last4}</div>`;
+}
+
+if(btnGT94) btnGT94.addEventListener('click', renderGT94);
+if(btnGT84) btnGT84.addEventListener('click', renderGT84);
+if(showHouses) showHouses.addEventListener('change', ()=>{ /* 즉시 재렌더 */ if(gtArea.firstChild){ gtArea.firstChild.click?.(); } });
+
+</script>
+</body>
+</html>
