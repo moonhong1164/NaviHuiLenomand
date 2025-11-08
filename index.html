@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NABY&MOONHONG LENORMAND ORACLE</title>
+<title>NAVI&HUI LENORMAND ORACLE</title>
 
 <style>
   :root{
@@ -15,6 +15,7 @@
     --ring:#c6b9e9;
     --shadow:0 6px 16px rgba(80,60,130,.18);
   }
+  *{box-sizing:border-box}
   body{
     margin:0;
     background:var(--bg);
@@ -31,6 +32,7 @@
   }
   h1{margin:0;font-size:22px;color:#493c7b}
   .container{max-width:1150px;margin:0 auto;padding:16px;}
+
   .btn{
     background:var(--panel);
     border:1px solid var(--ring);
@@ -46,7 +48,7 @@
   .card,.card-mini{
     background:var(--panel2);
     border:1px solid var(--ring);
-    border-radius:10px;
+    border-radius:12px;
     position:relative;
     padding:10px;
     box-shadow:var(--shadow);
@@ -63,11 +65,7 @@
     overflow:hidden;
     margin-bottom:6px;
   }
-  .img-box img{
-    width:100%;
-    height:100%;
-    object-fit:contain;
-  }
+  .img-box img{width:100%;height:100%;object-fit:contain}
 
   .grid{
     display:grid;
@@ -79,65 +77,75 @@
   .drawbox{
     background:var(--panel);
     border:1px solid var(--ring);
-    border-radius:10px;
+    border-radius:12px;
     padding:14px;
     box-shadow:var(--shadow);
     margin-bottom:16px;
   }
 
-  .draw-result{display:grid;gap:12px;margin-top:12px;}
-  .triple{grid-template-columns:repeat(3,1fr);}
-  .five{grid-template-columns:repeat(5,minmax(120px,1fr));overflow-x:auto;}
+  .draw-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .draw-result{display:grid;gap:12px;margin-top:12px}
+  .triple{grid-template-columns:repeat(3,1fr)}
+  .five{grid-template-columns:repeat(5,minmax(120px,1fr));overflow-x:auto}
 
   .type-badge{
-    position:absolute;
-    top:6px;right:6px;
-    font-size:12px;
-    padding:2px 6px;
-    border-radius:999px;
-    background:rgba(0,0,0,.20);
-    color:#fff;
+    position:absolute;top:6px;right:6px;
+    font-size:12px;padding:2px 6px;border-radius:999px;
+    background:rgba(0,0,0,.20);color:#fff;
   }
-
-  .card-positive{border:2px solid #4cc3ff;}
-  .card-negative{border:2px solid #ff6b6b;}
-  .card-neutral{border:2px solid #7df58e;}
+  .card-positive{border:2px solid #4cc3ff}
+  .card-negative{border:2px solid #ff6b6b}
+  .card-neutral{border:2px solid #7df58e}
 
   #drawSummary{
-    margin-top:10px;
-    border:1px dashed var(--ring);
-    padding:10px;
-    border-radius:8px;
-    background:var(--panel2);
-    box-shadow:var(--shadow);
-    color:var(--muted);
+    margin-top:10px;border:1px dashed var(--ring);
+    padding:10px;border-radius:10px;background:var(--panel2);
+    box-shadow:var(--shadow);color:var(--muted)
   }
 
+  /* ── 십자 스프레드: 중앙 정렬 & 폭 확장 (모바일 포함) ── */
   .cross-wrap{
     display:grid;
     grid-template-areas:
-      ". c1 ."
-      "c2 c3 c4"
-      ". c5 .";
-    grid-template-columns:1fr 1fr 1fr;
-    gap:10px;
-    max-width:420px;
+      ". top ."
+      "left center right"
+      ". bottom .";
+    grid-template-columns:1fr minmax(140px, 1fr) 1fr;
+    gap:12px;
+    width:min(95vw, 620px);
     margin:0 auto;
   }
-  .pos1{grid-area:c1}
-  .pos2{grid-area:c2}
-  .pos3{grid-area:c3}
-  .pos4{grid-area:c4}
-  .pos5{grid-area:c5}
+  .pos1{grid-area:top}
+  .pos2{grid-area:left}
+  .pos3{grid-area:center}
+  .pos4{grid-area:right}
+  .pos5{grid-area:bottom}
 
   input[type="text"],input[type="search"]{
-    width:100%;
-    padding:10px;
-    border:1px solid var(--ring);
-    border-radius:8px;
-    background:var(--panel2);
-    color:var(--text);
-    margin-top:8px;
+    width:100%;padding:10px;border:1px solid var(--ring);
+    border-radius:10px;background:var(--panel2);color:var(--text);margin-top:8px;
+  }
+
+  /* ── 모바일 최적화 ── */
+  @media (max-width: 900px){
+    .grid{grid-template-columns:repeat(3, minmax(0,1fr))}
+  }
+  @media (max-width: 600px){
+    h1{font-size:20px}
+    .grid{grid-template-columns:repeat(2, minmax(0,1fr));gap:12px}
+    .card,.card-mini{padding:10px;border-radius:12px}
+    .img-box{border-radius:10px}
+    .triple{grid-template-columns:repeat(3, minmax(0,1fr));gap:10px}
+    .five{grid-template-columns:repeat(5, minmax(120px,1fr));gap:10px}
+    .draw-actions .btn{padding:8px 12px;font-size:13px}
+    .draw-actions{gap:8px}
+    /* 십자: 화면에 꽉 차게 + 카드 너비 보정 */
+    .cross-wrap{
+      width:min(96vw, 560px);
+      gap:10px;
+      grid-template-columns:1fr minmax(160px, 1fr) 1fr;
+    }
+    .cross-wrap .card-mini{padding:10px}
   }
 </style>
 </head>
@@ -147,27 +155,26 @@
 
 <div class="container">
 
-<section class="drawbox">
-  <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
-    <label style="font-size:12px"><input id="toggleQ" type="checkbox"> 질문 입력</label>
-    <input id="inputQ" type="text" placeholder="질문 (선택)" style="display:none">
+  <section class="drawbox">
+    <div class="draw-actions">
+      <label style="font-size:12px"><input id="toggleQ" type="checkbox"> 질문 입력</label>
+      <input id="inputQ" type="text" placeholder="질문 (선택)" style="display:none">
+      <button class="btn" id="btn1">🃏 1카드</button>
+      <button class="btn" id="btn3">🃏🃏🃏 3카드</button>
+      <button class="btn" id="btn5">🃏🃏🃏🃏🃏 5카드</button>
+      <button class="btn" id="btnCross">✚ 십자</button>
+      <button class="btn" id="btnGT94">🧩 9×4</button>
+      <button class="btn" id="btnGT84">🧩 8×4+4</button>
+    </div>
 
-    <button class="btn" id="btn1">🃏 1카드</button>
-    <button class="btn" id="btn3">🃏🃏🃏 3카드</button>
-    <button class="btn" id="btn5">🃏🃏🃏🃏🃏 5카드</button>
-    <button class="btn" id="btnCross">✚ 십자</button>
-    <button class="btn" id="btnGT94">🧩 9×4</button>
-    <button class="btn" id="btnGT84">🧩 8×4+4</button>
-  </div>
+    <div id="qBox" style="margin-top:5px;color:var(--muted)"></div>
+    <div id="drawArea" class="draw-result"></div>
+    <div id="drawSummary" class="hidden"></div>
+  </section>
 
-  <div id="qBox" style="margin-top:5px;color:var(--muted)"></div>
-  <div id="drawArea" class="draw-result"></div>
-  <div id="drawSummary" class="hidden"></div>
-</section>
-
-<button class="btn" id="toggleList">📂 카드 전체 보기</button>
-<input id="search" type="search" placeholder="카드 검색 (번호/이름)">
-<div id="grid" class="grid" style="display:none"></div>
+  <button class="btn" id="toggleList">📂 카드 전체 보기</button>
+  <input id="search" type="search" placeholder="카드 검색 (번호/이름)">
+  <div id="grid" class="grid" style="display:none"></div>
 
 </div>
 
@@ -177,11 +184,13 @@
 </footer>
 
 <script>
+/* 이미지 경로 */
 function imgPath(num){
   const n = num < 10 ? `0${num}` : num;
   return `images/레노먼드-${n}.png`;
 }
 
+/* 데이터 */
 const CARDS = [
   {num:1, code:"Rider", kr:"기수", key:"소식•이동", add:"빠른 변화·연락 도착", type:"positive"},
   {num:2, code:"Clover", kr:"클로버", key:"행운•기회", add:"짧은 찬스·시도 좋음", type:"positive"},
@@ -221,23 +230,24 @@ const CARDS = [
   {num:36, code:"Cross", kr:"십자가", key:"고난•신념", add:"책임·버티기", type:"negative"},
 ];
 
+/* 유틸 */
 const grid=document.getElementById("grid");
 const drawArea=document.getElementById("drawArea");
 const toggleQ=document.getElementById("toggleQ");
 const inputQ=document.getElementById("inputQ");
 const qBox=document.getElementById("qBox");
-
 const typeClass = t => t==="positive"?"card-positive":(t==="negative"?"card-negative":"card-neutral");
 const typeEmoji = t => t==="positive"?"🔵":(t==="negative"?"🔴":"🟢");
 
+/* 목록 렌더 */
 function loadList(list){
   grid.innerHTML="";
   list.forEach(c=>{
-    let div=document.createElement("div");
+    const div=document.createElement("div");
     div.className="card "+typeClass(c.type);
     div.innerHTML=`
       <span class="type-badge">${typeEmoji(c.type)}</span>
-      <div class="img-box"><img src="${imgPath(c.num)}"></div>
+      <div class="img-box"><img src="${imgPath(c.num)}" alt="${c.code}"></div>
       <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
       <p><em>${c.key}</em> — ${c.add}</p>
     `;
@@ -246,65 +256,54 @@ function loadList(list){
 }
 loadList(CARDS);
 
+/* 토글/검색 */
 let open=false;
 document.getElementById("toggleList").onclick=()=>{
   open=!open;
   grid.style.display=open?"grid":"none";
   document.getElementById("toggleList").textContent=open?"📁 카드 접기":"📂 카드 전체 보기";
 };
-
 document.getElementById("search").oninput=e=>{
   const v=e.target.value.toLowerCase();
   loadList(CARDS.filter(c=>
-    c.code.toLowerCase().includes(v) ||
-    c.kr.includes(v) ||
-    (c.num+"").includes(v)
+    c.code.toLowerCase().includes(v) || c.kr.includes(v) || (c.num+"").includes(v)
   ));
 };
-
 toggleQ.onchange=()=>{
   inputQ.style.display=toggleQ.checked?"block":"none";
   if(!toggleQ.checked){inputQ.value="";qBox.textContent="";}
 };
 
-/* ✅ 5카드 상세 자동 해석 */
+/* 5카드 상세 자동 해석 */
 function buildFiveSummary(cards, q){
   const pos=cards.filter(c=>c.type==='positive').length;
   const neg=cards.filter(c=>c.type==='negative').length;
   const neu=cards.filter(c=>c.type==='neutral').length;
-
-  let tone='';
-  if(pos>neg)      tone = `전체 톤: 🔵 우호적 (긍정 ${pos} / 부정 ${neg} / 중립 ${neu})`;
-  else if(neg>pos) tone = `전체 톤: 🔴 신중(보수) (긍정 ${pos} / 부정 ${neg} / 중립 ${neu})`;
-  else             tone = `전체 톤: 🟢 균형(중립) (긍정 ${pos} / 부정 ${neg} / 중립 ${neu})`;
+  let tone = pos>neg ? `전체 톤: 🔵 우호적 (긍정 ${pos} / 부정 ${neg} / 중립 ${neu})`
+           : neg>pos ? `전체 톤: 🔴 신중(보수) (긍정 ${pos} / 부정 ${neg} / 중립 ${neu})`
+           : `전체 톤: 🟢 균형(중립) (긍정 ${pos} / 부정 ${neg} / 중립 ${neu})`;
 
   const has = n => cards.some(c=>c.code===n);
   const highlights=[];
-  if(has('Sun')||has('Key')||has('Bouquet'))
-    highlights.push(`추진 신호 — 결과 가시화 / 해결의 실마리`);
-  if(has('Mountain')||has('Scythe')||has('Coffin')||has('Snake')||has('Cloud'))
-    highlights.push(`리스크 — 지연·단절·혼선 가능, 일정 조정`);
-  if(has('Ring')||has('Letter')||has('Garden')||has('Tower'))
-    highlights.push(`계약·문서·공적 영역 체크`);
-  if(has('Fish')||has('Bear')||has('Anchor'))
-    highlights.push(`재정 / 자원 점검`);
+  if(has('Sun')||has('Key')||has('Bouquet')) highlights.push(`추진 신호 — 결과 가시화 / 해결의 실마리`);
+  if(has('Mountain')||has('Scythe')||has('Coffin')||has('Snake')||has('Cloud')) highlights.push(`리스크 — 지연·단절·혼선, 일정 조정`);
+  if(has('Ring')||has('Letter')||has('Garden')||has('Tower')) highlights.push(`계약·문서·공적 영역 체크`);
+  if(has('Fish')||has('Bear')||has('Anchor')) highlights.push(`재정/자원/지속가능성 점검`);
 
   let advice='';
   if(neg>pos){
-    advice = '권고: 리스크 우선 정리. 정보 재확인, 일정 조정, 작은 성과부터.';
-    if(has('Crossroad')) advice += ' 선택은 단순화가 유리.';
-    if(has('Fox')) advice += ' 계약·문구 세부 확인.';
-  } else if(pos>neg){
-    advice = '권고: 우호적. 들어온 제안/연락 활용, 속도 내기.';
-    if(has('Rider')) advice += ' 빠른 응답이 기회.';
-    if(has('Stork')) advice += ' 구조·습관 업데이트.';
-  } else {
-    advice = '권고: 당장 결론보다 데이터 정리·우선순위 세팅.';
-    if(has('Book')) advice += ' 추가 자료 확보로 확신도 상승.';
+    advice='권고: 리스크 우선 정리. 정보 재확인·일정 조정 후 작은 성과부터.';
+    if(has('Crossroad')) advice+=' 선택 단순화가 유리.';
+    if(has('Fox')) advice+=' 계약·문구 세부 확인.';
+  }else if(pos>neg){
+    advice='권고: 우호적. 들어온 제안/연락 활용, 속도 내기.';
+    if(has('Rider')) advice+=' 빠른 응답이 기회.';
+    if(has('Stork')) advice+=' 구조·습관 업데이트.';
+  }else{
+    advice='권고: 당장 결론보다 데이터 정리·우선순위 세팅.';
+    if(has('Book')) advice+=' 추가 자료 확보로 확신도 상승.';
   }
-
-  let qline = q && q.trim() ? `질문: “${q.trim()}”` : '';
-
+  const qline = (q && q.trim()) ? `질문: “${q.trim()}”` : '';
   return `
     <div><strong>${tone}</strong></div>
     ${qline?`<div style="margin-top:4px">${qline}</div>`:''}
@@ -313,10 +312,10 @@ function buildFiveSummary(cards, q){
   `;
 }
 
-/* ✅ 뽑기 */
+/* 공통 뽑기 */
 function pick(n){
   const arr=[]; for(let i=0;i<n;i++) arr.push(CARDS[Math.floor(Math.random()*CARDS.length)]);
-  if(toggleQ.checked && inputQ.value.trim()) qBox.textContent="질문: "+inputQ.value.trim(); else qBox.textContent="";
+  qBox.textContent = (toggleQ.checked && inputQ.value.trim()) ? "질문: "+inputQ.value.trim() : "";
 
   drawArea.classList.remove("triple","five");
   const sum=document.getElementById("drawSummary");
@@ -331,7 +330,7 @@ function pick(n){
     el.className="card-mini "+typeClass(c.type);
     el.innerHTML=`
       <span class="type-badge">${typeEmoji(c.type)}</span>
-      <div class="img-box"><img src="${imgPath(c.num)}"></div>
+      <div class="img-box"><img src="${imgPath(c.num)}" alt="${c.code}"></div>
       <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
       <p><em>${c.key}</em> — ${c.add}</p>
     `;
@@ -339,75 +338,73 @@ function pick(n){
   });
 
   if(n===5){
-    const html = buildFiveSummary(arr, (toggleQ.checked?inputQ.value:'') );
+    const html = buildFiveSummary(arr, (toggleQ.checked?inputQ.value:''));
     sum.innerHTML = html;
     sum.classList.remove("hidden");
   }
 }
 
+/* 버튼 연결 */
 document.getElementById("btn1").onclick=()=>pick(1);
 document.getElementById("btn3").onclick=()=>pick(3);
 document.getElementById("btn5").onclick=()=>pick(5);
 
-/* ✅ 십자 스프레드 */
+/* 십자 스프레드 (중앙 정렬 버전) */
 document.getElementById("btnCross").onclick=()=>{
-  const arr=[];for(let i=0;i<5;i++) arr.push(CARDS[Math.floor(Math.random()*CARDS.length)]);
-  drawArea.innerHTML="";
+  const arr=[]; for(let i=0;i<5;i++) arr.push(CARDS[Math.floor(Math.random()*CARDS.length)]);
   document.getElementById("drawSummary").classList.add("hidden");
-
   const role=["현재/핵심","장애","본질","조언","결과"];
   let html=`<div class="cross-wrap">`;
   arr.forEach((c,i)=>{
     html+=`
     <div class="card-mini ${typeClass(c.type)} pos${i+1}">
       <span class="type-badge">${typeEmoji(c.type)}</span>
-      <div class="img-box"><img src="${imgPath(c.num)}"></div>
+      <div class="img-box"><img src="${imgPath(c.num)}" alt="${c.code}"></div>
       <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
       <p><em>${role[i]}</em> — ${c.key}, ${c.add}</p>
     </div>`;
   });
   html+=`</div>`;
+  drawArea.className='draw-result'; /* 기존 grid 영향 제거 */
   drawArea.innerHTML=html;
 };
 
-/* ✅ 그랑타블로 */
+/* 그랑타블로 */
 const byNum=new Map(CARDS.map(c=>[c.num,c]));
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
 document.getElementById("btnGT94").onclick=()=>{
   const order=shuffle([...Array(36)].map((_,i)=>i+1));
-  drawArea.innerHTML="";
   document.getElementById("drawSummary").classList.add("hidden");
+  drawArea.className='draw-result';
   drawArea.innerHTML=`<div style="display:grid;gap:8px;grid-template-columns:repeat(9,1fr)">
-  ${order.map(n=>{
-    const c=byNum.get(n);
-    return `<div class="card-mini">
-      <div class="img-box"><img src="${imgPath(c.num)}"></div>
-      <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
-    </div>`
-  }).join("")}
+    ${order.map(n=>{const c=byNum.get(n);return `
+      <div class="card-mini">
+        <div class="img-box"><img src="${imgPath(c.num)}" alt="${c.code}"></div>
+        <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
+      </div>`}).join("")}
   </div>`;
 };
 
 document.getElementById("btnGT84").onclick=()=>{
   const order=shuffle([...Array(36)].map((_,i)=>i+1));
-  drawArea.innerHTML="";
   document.getElementById("drawSummary").classList.add("hidden");
+  drawArea.className='draw-result';
   const top=order.slice(0,32), last=order.slice(32);
   drawArea.innerHTML=`
   <div style="display:grid;gap:8px;grid-template-columns:repeat(8,1fr)">
-    ${top.map(n=>{
-      const c=byNum.get(n);
-      return `<div class="card-mini"><div class="img-box"><img src="${imgPath(c.num)}"></div>
-      <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p></div>`
-    }).join("")}
+    ${top.map(n=>{const c=byNum.get(n);return `
+      <div class="card-mini">
+        <div class="img-box"><img src="${imgPath(c.num)}" alt="${c.code}"></div>
+        <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
+      </div>`}).join("")}
   </div>
   <div style="display:grid;gap:8px;grid-template-columns:repeat(4,1fr);max-width:700px;margin:0 auto">
-    ${last.map(n=>{
-      const c=byNum.get(n);
-      return `<div class="card-mini"><div class="img-box"><img src="${imgPath(c.num)}"></div>
-      <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p></div>`
-    }).join("")}
+    ${last.map(n=>{const c=byNum.get(n);return `
+      <div class="card-mini">
+        <div class="img-box"><img src="${imgPath(c.num)}" alt="${c.code}"></div>
+        <p><strong>${c.num}. ${c.code}</strong> (${c.kr})</p>
+      </div>`}).join("")}
   </div>`;
 };
 </script>
