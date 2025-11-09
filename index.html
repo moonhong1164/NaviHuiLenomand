@@ -30,10 +30,29 @@
   /* 3/5 수평 */
   .row{display:flex;gap:14px;justify-content:center;align-items:flex-start;flex-wrap:nowrap}
 
-  /* ✅ 5카드: 그리드로 변경(넘침 방지) */
-  .fiveGrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;justify-items:center}
-  .fiveGrid .card{width:100%;max-width:150px}
+/* 5카드: 기본은 5열 그리드(데스크탑) */
+.fiveGrid{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:14px;
+  justify-items:center;}
+.fiveGrid .card{width:100%;max-width:150px}
 
+/* 📱모바일: 가로 일렬 스크롤 */
+@media (max-width: 768px){
+  .fiveGrid{
+    display:flex;
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    -webkit-overflow-scrolling: touch;
+    gap:12px;
+    padding: 4px 8px 10px;  /* 아래 살짝 여백 */}
+  .fiveGrid .item{min-width:140px; flex: 0 0 auto;}
+  .fiveGrid .card{max-width:140px; width:140px}
+  /* 필요시 스크롤바 최소화 */
+  .fiveGrid::-webkit-scrollbar{height:6px}
+  .fiveGrid::-webkit-scrollbar-thumb{background:#d8d1f2;border-radius:999px}
+}
   /* 십자 */
   .cross{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:640px;margin:0 auto}
   .cross .card{width:100%;max-width:150px}
