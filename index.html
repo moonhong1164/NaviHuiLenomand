@@ -347,13 +347,13 @@ function summarize(cards){
 
   // 아주 간단한 규칙 기반 문장
   let interp = '';
-  if(top==='positive') interp = '전반적으로 흐름이 우호적입니다. 추진/확대·회복·합의 가능성이 높습니다.';
-  else if(top==='negative') interp = '경고 신호가 뚜렷합니다. 단절/지연/소모 이슈에 대비가 필요합니다.';
+  if(top==='negative') interp = '전반적으로 흐름이 우호적입니다. 추진/확대·회복·합의 가능성이 높습니다.';
+  else if(top==='positive') interp = '경고 신호가 뚜렷합니다. 단절/지연/소모 이슈에 대비가 필요합니다.';
   else interp = '상황이 엇갈리며 균형 조정이 관건입니다. 서두르기보다 정보 확인이 우선입니다.';
 
   let advice = '';
-  if(top==='positive') advice = '기회가 왔을 때 과감히 잡되, 일정/조건을 명확히 하고 실행하세요.';
-  else if(top==='negative') advice = '무리한 확장은 피하고 리스크 관리·정리·보수적 선택을 우선하세요.';
+  if(top==='negative') advice = '기회가 왔을 때 과감히 잡되, 일정/조건을 명확히 하고 실행하세요.';
+  else if(top==='positive') advice = '무리한 확장은 피하고 리스크 관리·정리·보수적 선택을 우선하세요.';
   else advice = '옵션을 비교·검증한 뒤 작게 시작하거나 유보하는 전략이 유리합니다.';
 
   return { toneBadge: toneBadgeHtml, interp, advice };
