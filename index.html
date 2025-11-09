@@ -2,238 +2,267 @@
 
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>NAVI&HUI LENORMAND</title>
-<style>
-  :root{
-    --lav:#efe7ff; --lav-2:#f6f1ff; --ink:#3b2f55; --muted:#6f6391;
-    --card:#ffffff; --chip:#e9e3ff; --accent:#6b5fc7; --ring:#d5cfff;
-    --pos:#2d6cdf; --neg:#d92d20; --neu:#1ea672; --shadow:0 8px 24px rgba(31,7,77,.10);
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;height:100%;}
-  body{background:var(--lav-2);color:var(--ink);font-family:system-ui,Segoe UI,Apple SD Gothic Neo,Malgun Gothic,sans-serif}
-  header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#f2ecff,rgba(242,236,255,.6));border-bottom:1px solid var(--ring);backdrop-filter:blur(6px)}
-  .container{max-width:1100px;margin:0 auto;padding:16px}
-  h1{margin:0;font-size:28px;letter-spacing:.4px}.toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:12px;border:1px solid var(--ring);background:#fff;border-radius:14px;box-shadow:var(--shadow)} .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--ring);background:var(--chip);border-radius:12px;color:var(--ink);cursor:pointer} .btn:active{transform:translateY(1px)} .chip{padding:2px 8px;border-radius:999px;background:var(--chip);border:1px solid var(--ring);font-size:12px;color:var(--muted)} .qs{display:flex;align-items:center;gap:8px;margin-right:auto} .qs input[type="text"]{width:220px;padding:8px 10px;border-radius:10px;border:1px solid var(--ring)}
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>NAVI&HUI LENORMAND</title>
+  <style>
+    :root{
+      --bg:#efe7fa;           /* 라일락 톤 배경 */
+      --panel:#f6f1ff;        /* 카드 주변 패널 */
+      --ink:#2b2352;          /* 헤더 텍스트 */
+      --muted:#6f67a3;
+      --ring:#d8cef6;
+      --chip:#e9e1ff;
+      --shadow:0 12px 30px rgba(28,22,52,.15);/* 크기 토큰 */
+  --card-w:clamp(110px, 20vw, 180px);
+  --card-h:calc(var(--card-w)*1.55);
+  --spread-card:clamp(95px, 18vw, 160px);
+  --gt-card:clamp(56px, 9.2vw, 88px);  /* 그랑타블로 고정 크기(모바일에서도 한 화면) */
+  --gap:12px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);font-family:system-ui,Apple SD Gothic Neo,Noto Sans KR,Segoe UI,Roboto,sans-serif;color:var(--ink)}
 
-#result{margin-top:14px} .cards{display:flex;gap:14px;flex-wrap:wrap} .card{background:var(--card);border:1px solid var(--ring);border-radius:16px;box-shadow:var(--shadow);padding:12px;width:210px} .card .img{width:100%;aspect-ratio:3/4.6;border-radius:12px;background:#cab9ff;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid var(--ring)} .card .img img{width:100%;height:100%;object-fit:cover;display:block} .card h4{margin:10px 0 6px;font-size:20px} .card .kw{color:var(--muted);font-size:14px} .tone{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;border:1px solid var(--ring)} .tone.pos{background:rgba(45,108,223,.10);color:var(--pos)} .tone.neg{background:rgba(217,45,32,.10);color:var(--neg)} .tone.neu{background:rgba(30,166,114,.10);color:var(--neu)}
+header{position:sticky;top:0;z-index:20;background:radial-gradient(120% 100% at 50% 0%,#ffffffaa 0,#efe7fa 60%,#efe7fa 100%);backdrop-filter:blur(6px);border-bottom:1px solid var(--ring)}
+.container{max-width:1100px;margin:0 auto;padding:18px}
+h1{margin:0;font-size:clamp(20px,4.6vw,40px);letter-spacing:.5px}
 
-.panel{margin-top:12px;padding:12px 14px;border:1px solid var(--ring);background:#fff;border-radius:14px;box-shadow:var(--shadow)} .panel h3{margin:0 0 8px 0} .panel ul{margin:8px 0 0 18px}
+/* 컨트롤 박스 */
+.toolbar{background:var(--panel);border:1px solid var(--ring);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border:1px solid var(--ring);border-radius:12px;background:#fff;cursor:pointer;color:var(--ink);} 
+.btn:active{transform:translateY(1px)}
+.chip{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--ring);background:var(--chip);color:var(--muted)}
 
-/* ===== 그랑타블로 공통 ===== */ .gt-wrap{margin-top:14px} .gt-hint{color:var(--muted);font-size:13px;margin:6px 0 10px} .gt-grid{display:grid;gap:10px;justify-content:center} .gt-grid .card{width:102px;padding:8px} .ess-grid{margin-top:10px;display:grid;gap:10px;justify-content:center} .ess-grid .card{width:120px;padding:8px}
+/* 공통 카드 */
+.card{width:var(--card-w);height:var(--card-h);background:#b7a4ea;border-radius:16px;padding:10px;border:6px solid #fff;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;align-items:center}
+.card small{display:block;margin-top:8px;color:#fff;letter-spacing:.12em}
 
-/* ===== 데스크탑 GT 가로폭 축소 ===== */ @media (min-width:769px){ [data-spread="gt-9x4"] .gt-grid{grid-template-columns:repeat(9, 102px)} [data-spread="gt-8x4"] .gt-grid{grid-template-columns:repeat(8, 110px)} [data-spread="gt-8x4"] .ess-grid{grid-template-columns:repeat(4, 140px)} }
+/* 결과 영역 */
+#stage{margin-top:14px;display:flex;flex-direction:column;gap:14px}
+.spread{background:#fff;border:1px solid var(--ring);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
 
-/* ===== 모바일: 한 화면 고정 및 축소 ===== / @media (max-width:480px){ / 5카드 */ [data-spread="five"] .cards{display:grid !important;grid-template-columns:repeat(5,1fr)!important;gap:10px} [data-spread="five"] .card{width:100%;padding:8px}
+/* 1/3/5 공통 레이아웃 - 가로 고정, 한 화면에 수납 */
+.row{display:grid;grid-auto-rows:1fr;gap:var(--gap);justify-items:center}
+.row.cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}
+.row.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.row.cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+.row .card{width:var(--spread-card);height:calc(var(--spread-card)*1.55)}
 
-/* 3카드 */
-[data-spread="three"] .cards{display:grid !important;grid-template-columns:repeat(3,1fr)!important;gap:12px}
-[data-spread="three"] .card{width:100%;padding:10px}
+/* 십자 스프레드 – 겹침 방지, box 안 정중앙 */
+.cross{display:grid;grid-template-columns:repeat(3,var(--spread-card));grid-template-rows:repeat(3,calc(var(--spread-card)*1.55));gap:var(--gap);justify-content:center}
+.cross .slot{display:flex;align-items:center;justify-content:center}
+.cross .slot:nth-child(2){grid-column:2}
+.cross .slot:nth-child(3){grid-column:2;grid-row:2}
+.cross .slot:nth-child(4){grid-column:1;grid-row:2}
+.cross .slot:nth-child(5){grid-column:3;grid-row:2}
+.cross .slot:nth-child(6){grid-column:2;grid-row:3}
+.mini{font-weight:600;margin-top:8px}
 
-/* GT 텍스트 최소화 + 가로 한 화면 */
-[data-spread^="gt-"] .card h4, [data-spread^="gt-"] .card .kw{display:none}
-[data-spread^="gt-"] .gt-grid{grid-template-columns:repeat(9, minmax(0,1fr))!important;gap:6px}
-[data-spread^="gt-"] .gt-grid .card{padding:6px}
-[data-spread="gt-8x4"] .ess-grid{grid-template-columns:repeat(4, minmax(0,1fr));gap:6px}
+/* 그랑타블로(9x4, 8x4+4) – 항상 한 화면에 수납되도록 작은 카드 + 타이틀 최소화 */
+.gt{display:flex;flex-direction:column;gap:10px}
+.gt-grid{display:grid;gap:8px;justify-content:center}
+.gt-grid.cols-9{grid-template-columns:repeat(9,var(--gt-card))}
+.gt-grid.cols-8{grid-template-columns:repeat(8,var(--gt-card))}
+.gt .gt-card{width:var(--gt-card);height:calc(var(--gt-card)*1.55);background:#b7a4ea;border:4px solid #fff;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative}
+.gt .label{position:absolute;bottom:4px;left:0;right:0;text-align:center;color:#fff;font-size:10px;letter-spacing:.06em}
 
-} </style>
+/* 에센스 4장 가로 */
+.essence{display:grid;grid-template-columns:repeat(4,var(--gt-card));gap:8px;justify-content:center}
 
+/* 톤 칩 */
+.tone{display:inline-flex;align-items:center;gap:6px;margin-right:6px}
+.tone i{display:inline-block;width:10px;height:10px;border-radius:50%}
+.tone.pos i{background:#3a7bff}
+.tone.neg i{background:#f25b63}
+.tone.neu i{background:#17b978}
+
+/* 요약 박스 */
+.summary{background:var(--panel);border:1px solid var(--ring);border-radius:14px;padding:12px}
+
+@media (max-width:480px){
+  :root{--spread-card:clamp(90px, 28vw, 130px);--gt-card:clamp(48px, 9vw, 72px)}
+  .row.cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+
+  </style>
 </head>
 <body>
-<header>
-  <div class="container">
-    <h1>NAVI&HUI LENORMAND</h1>
-  </div>
-</header><main class="container">
-  <div class="toolbar">
-    <label class="qs chip"><input type="checkbox" id="qToggle"> 질문 입력
-      <input type="text" id="qInput" placeholder="질문(선택)" style="display:none">
-    </label>
-    <button class="btn" id="btn1">🃏 1카드</button>
-    <button class="btn" id="btn3">🃏🃏🃏 3카드</button>
-    <button class="btn" id="btn5">🃏🃏🃏🃏🃏 5카드</button>
-    <button class="btn" id="btnCross">➕ 십자</button>
-    <button class="btn" id="btnGT9x4">🧩 9×4</button>
-    <button class="btn" id="btnGT8x4">🧩 8×4+4</button>
-  </div>
-  <div id="result"></div>
+<header><div class="container"><h1>NAVI&HUI LENORMAND</h1></div></header>
+<main class="container">
+  <section class="toolbar">
+    <label class="chip"><input id="qToggle" type="checkbox"> 질문 입력</label>
+    <input id="qInput" type="search" placeholder="질문(선택)" style="display:none;min-width:220px"><button class="btn" id="btn1">🃏 1카드</button>
+<button class="btn" id="btn3">🃏🃏🃏 3카드</button>
+<button class="btn" id="btn5">🃏×5 5카드</button>
+<button class="btn" id="btnCross">➕ 십자</button>
+<button class="btn" id="btnGT94">🧩 9×4</button>
+<button class="btn" id="btnGT84">🧩 8×4+4</button>
+
+  </section>  <section id="stage"></section>
 </main><script>
-// ===== 카드 데이터 =====
-const CARDS=[
-  {id:1, en:'Rider', kr:'기수', kw:'소식·도착·속도', tone:'pos'},
-  {id:2, en:'Clover', kr:'클로버', kw:'기회·유연·작은 행운', tone:'pos'},
-  {id:3, en:'Ship', kr:'선박', kw:'여행·확장·이동', tone:'neu'},
-  {id:4, en:'House', kr:'집', kw:'안정·가정·기반', tone:'pos'},
-  {id:5, en:'Tree', kr:'나무', kw:'건강·성장·시간', tone:'neu'},
-  {id:6, en:'Cloud', kr:'구름', kw:'혼란·불확실·판단 보류', tone:'neg'},
-  {id:7, en:'Snake', kr:'뱀', kw:'장애·유혹·기만', tone:'neg'},
-  {id:8, en:'Coffin', kr:'관', kw:'끝·전환·정리', tone:'neg'},
-  {id:9, en:'Bouquet', kr:'부케', kw:'기쁨·선물·호의', tone:'pos'},
-  {id:10, en:'Scythe', kr:'낫', kw:'결단·절단·갑작스러움', tone:'neg'},
-  {id:11, en:'Whip', kr:'채찍', kw:'갈등·반복·루프 끊기', tone:'neg'},
-  {id:12, en:'Bird', kr:'새', kw:'대화·연락·소통', tone:'neu'},
-  {id:13, en:'Child', kr:'아이', kw:'새 시작·순수·작음', tone:'pos'},
-  {id:14, en:'Fox', kr:'여우', kw:'주의·영리함·직장', tone:'neu'},
-  {id:15, en:'Bear', kr:'곰', kw:'권위·자원·보호', tone:'neu'},
-  {id:16, en:'Stars', kr:'별', kw:'희망·영감·인터넷', tone:'pos'},
-  {id:17, en:'Stork', kr:'황새', kw:'변화·이동·개선', tone:'pos'},
-  {id:18, en:'Dog', kr:'개', kw:'신뢰·우정·파트너', tone:'pos'},
-  {id:19, en:'Tower', kr:'탑', kw:'기관·거리두기·격상', tone:'neu'},
-  {id:20, en:'Garden', kr:'정원', kw:'모임·공개·평판', tone:'pos'},
-  {id:21, en:'Mountain', kr:'산', kw:'지연·장애·벽', tone:'neg'},
-  {id:22, en:'Crossroad', kr:'갈림길', kw:'선택·결정·비교', tone:'neu'},
-  {id:23, en:'Mice', kr:'쥐', kw:'소모·분실·불안', tone:'neg'},
-  {id:24, en:'Heart', kr:'하트', kw:'사랑·열정·호감', tone:'pos'},
-  {id:25, en:'Ring', kr:'반지', kw:'계약·순환·장기커밋', tone:'pos'},
-  {id:26, en:'Book', kr:'책', kw:'비밀·학습·문서', tone:'neu'},
-  {id:27, en:'Letter', kr:'편지', kw:'문서·메일·승인', tone:'neu'},
-  {id:28, en:'Man', kr:'남성', kw:'핵심 인물 — 중심 남성', tone:'pos'},
-  {id:29, en:'Woman', kr:'여성', kw:'핵심 인물 — 중심 여성', tone:'pos'},
-  {id:30, en:'Lily', kr:'백합', kw:'평화·성숙·휴식', tone:'pos'},
-  {id:31, en:'Sun', kr:'태양', kw:'성공·가시성·에너지', tone:'pos'},
-  {id:32, en:'Moon', kr:'달', kw:'명예·감정·리듬', tone:'pos'},
-  {id:33, en:'Key', kr:'열쇠', kw:'해결·정답·돌파구', tone:'pos'},
-  {id:34, en:'Fish', kr:'물고기', kw:'재물·교류·거래', tone:'pos'},
-  {id:35, en:'Anchor', kr:'닻', kw:'안정·고정·지속성', tone:'pos'},
-  {id:36, en:'Cross', kr:'십자가', kw:'고난·신념·책임', tone:'neg'}
+/*************************
+ * 데이터(간단 키워드/톤)
+ *************************/
+const CARDS = [
+  [1,'Rider','기수','소식·도착','pos'],[2,'Clover','클로버','기회·유연','pos'],[3,'Ship','선박','여행·확장','neu'],[4,'House','집','가정·안정','pos'],[5,'Tree','나무','건강·성장·시간','pos'],[6,'Cloud','구름','혼란·불확실','neg'],[7,'Snake','뱀','장애·유혹·기만','neg'],[8,'Coffin','관','끝·전환','neg'],[9,'Bouquet','부케','기쁨·선물·호의','pos'],[10,'Scythe','낫','단절·결단','neg'],[11,'Whip','채찍','갈등·반복','neg'],[12,'Bird','새','대화·연락·소통','pos'],[13,'Child','아이','새 시작·순수','pos'],[14,'Fox','여우','주의·일·영리함','neu'],[15,'Bear','곰','권위·자원','neu'],[16,'Stars','별','비전·희망','pos'],[17,'Stork','황새','변화·이동','pos'],[18,'Dog','개','신뢰·우정','pos'],[19,'Tower','탑','분리·기관','neu'],[20,'Garden','정원','모임·공개','pos'],[21,'Mountain','산','지연·장애·벽','neg'],[22,'Crossroad','갈림길','선택·결정','neu'],[23,'Mice','쥐','소모·불안','neg'],[24,'Heart','하트','사랑·열정','pos'],[25,'Ring','반지','계약·순환','pos'],[26,'Book','책','비밀·학습','neu'],[27,'Letter','편지','문서·메일','pos'],[28,'Man','남성','핵심 인물(남)','neu'],[29,'Woman','여성','핵심 인물(여)','neu'],[30,'Lily','백합','평화·성숙·휴식','pos'],[31,'Sun','태양','성공·가시성·에너지','pos'],[32,'Moon','달','명예·감정','pos'],[33,'Key','열쇠','해결·정답·돌파구','pos'],[34,'Fish','물고기','재물·교류·거래','pos'],[35,'Anchor','닻','안정·지속성','pos'],[36,'Cross','십자가','고난·신념·책임','neg']
 ];
 
-const PAD = n=> String(n).padStart(2,'0');
-const imgSrc = id => `images/레노먼드-${PAD(id)}.png`;
+const byNo = Object.fromEntries(CARDS.map(([no,en,kr,kw,t])=>[no,{no,en,kr,kw,t}]))
 
 function toneChip(t){
-  const map={pos:['🟦','pos','긍정'],neg:['🔴','neg','부정'],neu:['🟢','neu','중립']};
-  const [emo,cls,txt]=map[t]||map.neu;return `<span class="tone ${cls}">${emo} ${txt}</span>`;
+  const map={pos:['긍정','pos'],neg:['부정','neg'],neu:['중립','neu']};
+  const [label,cls]=map[t]||['중립','neu'];
+  return `<span class="tone ${cls}"><i></i>${label}</span>`
 }
 
-function cardHTML(c, opts={}){
-  const showText = opts.showText!==false; // 기본 표시
-  return `<article class="card" data-id="${c.id}">
-    <div class="img"><img src="${imgSrc(c.id)}" alt="${c.id}. ${c.en}"></div>
-    ${showText?`<h4>${c.id}. ${c.en} <small>(${c.kr})</small></h4>`:''}
-    ${showText?`<div class="kw">${c.kw}</div>`:''}
-    <div style="margin-top:8px">${toneChip(c.tone)}</div>
-  </article>`;
+/********************* 유틸 *********************/
+function rand(n){return Math.floor(Math.random()*n)}
+function draw(n){
+  const deck=[...CARDS];
+  const picked=[];
+  while(picked.length<n && deck.length){
+    const i = rand(deck.length);
+    picked.push(deck.splice(i,1)[0]);
+  }
+  return picked.map(([no])=>byNo[no]);
+}
+function clearStage(){document.getElementById('stage').innerHTML=''}
+function qText(){const i=document.getElementById('qInput');return (document.getElementById('qToggle').checked && i.value.trim())? i.value.trim():''}
+
+/********************* 렌더러 *********************/
+function cardEl(c,small=false){
+  const w = small? 'var(--gt-card)':'var(--spread-card)';
+  const h = small? 'calc(var(--gt-card)*1.55)':'calc(var(--spread-card)*1.55)';
+  return `<figure class="card" style="width:${w};height:${h};"><img alt="${c.no}. ${c.en}" src="images/레노먼드-${String(c.no).padStart(2,'0')}.png" style="width:100%;height:100%;object-fit:cover;border-radius:10px;"/><figcaption class="mini">${c.no}. ${c.en}</figcaption></figure>`
 }
 
-function pick(n){
-  const arr=[...CARDS];const res=[];
-  while(res.length<n){
-    const i=Math.floor(Math.random()*arr.length);
-    res.push(arr.splice(i,1)[0]);
-  } return res;
-}
-
-function countsTone(list){
-  const ct={pos:0,neg:0,neu:0};list.forEach(c=>ct[c.tone]++);return ct;
-}
-
-function toneBadgeFromCounts(ct){
-  const max = Object.entries(ct).sort((a,b)=>b[1]-a[1])[0][0];
-  return toneChip(max) + ` <span style="color:var(--muted)">(긍정 ${ct.pos} / 부정 ${ct.neg} / 중립 ${ct.neu})</span>`;
-}
-
-function qText(){
-  const on = document.getElementById('qToggle').checked;const v=document.getElementById('qInput').value.trim();
-  return on && v? `<div class="panel" style="margin-bottom:10px"><strong>질문:</strong> ${v}</div>`:'';
-}
-
-function mount(html){
-  const el=document.getElementById('result');
-  el.innerHTML=''; // 교체 렌더
-  el.insertAdjacentHTML('beforeend',html);
-  window.scrollTo({top:el.offsetTop-8,behavior:'smooth'});
-}
-
-// ===== 스프레드 렌더 =====
-function renderOne(){
-  const list=pick(1); const ct=countsTone(list);
-  mount(`${qText()}<section class="spread one panel" data-spread="one">
-    <div class="cards">${cardHTML(list[0])}</div>
-    <div class="panel"><strong>전체 톤:</strong> ${toneBadgeFromCounts(ct)}</div>
-  </section>`);
-}
-
-function renderThree(){
-  const list=pick(3); const ct=countsTone(list);
-  mount(`${qText()}<section class="spread three panel" data-spread="three">
-    <div class="cards">${list.map(c=>cardHTML(c)).join('')}</div>
-    <div class="panel"><strong>전체 톤:</strong> ${toneBadgeFromCounts(ct)}</div>
-  </section>`);
+function renderList(list, cols){
+  clearStage();
+  const stage=document.getElementById('stage');
+  const box=document.createElement('section');
+  box.className='spread';
+  box.innerHTML=`<div class="row cols-${cols}">${list.map(c=>cardEl(c)).join('')}</div>` + makeSummary(list);
+  stage.appendChild(box);
 }
 
 function renderFive(){
-  const list=pick(5); const ct=countsTone(list);
-  const tips = {
-    pos:'우호적 흐름입니다. 들어온 제안/연락을 활용해 보세요.',
-    neg:'리스크 관리가 핵심입니다. 일정과 자료를 점검해 보세요.',
-    neu:'정보 수집이 우선입니다. 비교/검토 후 결정이 좋아요.'
-  };
-  const dom = `<section class="spread five panel" data-spread="five">
-    ${qText()}
-    <div class="cards">${list.map(c=>cardHTML(c)).join('')}</div>
-    <div class="panel">
-      <strong>전체 톤:</strong> ${toneBadgeFromCounts(ct)}
-      <ul>${list.map(c=>`<li>${c.id}. ${c.en} — ${c.kw}</li>`).join('')}</ul>
-      <p><strong>권고:</strong> ${(ct.pos>ct.neg && ct.pos>=ct.neu)?tips.pos:(ct.neg>ct.pos && ct.neg>=ct.neu)?tips.neg:tips.neu}</p>
-    </div>
-  </section>`;
-  mount(dom);
+  const picked=draw(5);
+  clearStage();
+  const stage=document.getElementById('stage');
+  const box=document.createElement('section');
+  box.className='spread';
+  box.innerHTML=`<div class="row cols-5">${picked.map(c=>cardEl(c)).join('')}</div>` + makeSummary(picked,true);
+  stage.appendChild(box);
 }
 
 function renderCross(){
-  const [left,top,center,right,bottom]=pick(5);
-  const list=[left,top,center,right,bottom];
-  const ct=countsTone(list);
-  const grid = `<div class="cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;place-items:center">
-    <div></div>${cardHTML(top)}<div></div>
-    ${cardHTML(left)}${cardHTML(center)}${cardHTML(right)}
-    <div></div>${cardHTML(bottom)}<div></div>
-  </div>`;
-  mount(`${qText()}<section class="spread cross panel" data-spread="cross">
-    ${grid}
-    <div class="panel"><strong>전체 톤:</strong> ${toneBadgeFromCounts(ct)}</div>
-  </section>`);
+  const [center,left,right,top,bottom]=draw(5);
+  clearStage();
+  const stage=document.getElementById('stage');
+  const box=document.createElement('section');
+  box.className='spread';
+  box.innerHTML=`<div class="cross">
+    <div class="slot"></div>
+    <div class="slot">${cardEl(top)}</div>
+    <div class="slot"></div>
+    <div class="slot">${cardEl(left)}</div>
+    <div class="slot">${cardEl(center)}</div>
+    <div class="slot">${cardEl(right)}</div>
+    <div class="slot"></div>
+    <div class="slot">${cardEl(bottom)}</div>
+    <div class="slot"></div>
+  </div>` + makeSummary([center,top,left,right,bottom]);
+  stage.appendChild(box);
 }
 
-function renderGT9x4(){
-  const list = pick(36); // 랜덤 전체 배치
-  const grid = `<div class="gt-grid">${list.map(c=>cardHTML(c,{showText:false})).join('')}</div>`;
-  mount(`<section class="gt-wrap panel" data-spread="gt-9x4">
-    <div class="gt-hint">카드를 눌러 <strong>키 카드</strong>의 주위카드와 <strong>나이팅</strong>을 <strong>아래</strong>에서 확인하세요.</div>
-    ${grid}
-  </section>`);
+/* 그랑타블로 */
+function renderGT(rows,cols,withEssence){
+  const deck=[...CARDS].map(([no])=>byNo[no]);
+  const grid=[]; // 2D
+  for(let r=0;r<rows;r++){ grid[r]=[]; for(let c=0;c<cols;c++){ const i=r*cols+c; grid[r][c]=deck[i]; }}
+  const flat=grid.flat();
+
+  clearStage();
+  const stage=document.getElementById('stage');
+  const box=document.createElement('section');
+  box.className='spread';
+
+  // 안내 텍스트(아래 확인)
+  const guide=`<div class="summary" style="margin-bottom:8px">카드를 눌러 <strong>키 카드</strong>의 주위카드와 <strong>나이팅</strong>을 <u>아래</u>에서 확인하세요.</div>`
+
+  let html = `<section class="gt">${guide}<div class="gt-grid ${cols===9?'cols-9':'cols-8'}">`;
+  flat.forEach(c=>{ html+=`<figure class="gt-card" data-no="${c.no}"><img alt="${c.no}. ${c.en}" src="images/레노먼드-${String(c.no).padStart(2,'0')}.png" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"/><figcaption class="label">${c.no}</figcaption></figure>`});
+  html+='</div>';
+
+  if(withEssence){
+    const essence = deck.slice(rows*cols, rows*cols+4);
+    html+=`<div class="essence" style="margin-top:10px">${essence.map(c=>`<figure class="gt-card">${cardEl(c,true)}</figure>`).join('')}</div>`;
+    html+=`<div class="summary" id="essTone"></div>`;
+  }
+
+  html+=`<div class="summary" id="gtDetail" style="margin-top:10px"></div></section>`;
+  box.innerHTML=html;
+  stage.appendChild(box);
+
+  // 클릭 이벤트 – 키 카드/주위/나이팅
+  box.querySelectorAll('.gt-card').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const n = Number(el.dataset.no);
+      const info = keyInsight(n, rows, cols);
+      document.getElementById('gtDetail').innerHTML = info;
+    })
+  })
+
+  if(withEssence){
+    const ess = deck.slice(rows*cols, rows*cols+4);
+    const tone = toneCount(ess);
+    document.getElementById('essTone').innerHTML = `에센스 톤: ${toneChip(tone.main)} (긍정 ${tone.pos}/ 부정 ${tone.neg}/ 중립 ${tone.neu})`;
+  }
 }
 
-function renderGT8x4(){
-  const list = pick(36);
-  const main36 = list.slice(0,32); // 본판 8x4
-  const ess4 = list.slice(32);
-  const grid = `<div class="gt-grid">${main36.map(c=>cardHTML(c,{showText:false})).join('')}</div>`;
-  const ess = `<div class="ess-grid">${ess4.map(c=>cardHTML(c,{showText:false})).join('')}</div>`;
-  const ct = countsTone(ess4);
-  mount(`<section class="gt-wrap panel" data-spread="gt-8x4">
-    <div class="gt-hint">카드를 눌러 <strong>키 카드</strong>의 주위카드와 <strong>나이팅</strong>을 <strong>아래</strong>에서 확인하세요.</div>
-    ${grid}
-    <div class="panel" style="margin-top:10px">
-      <h3 style="margin:0 0 8px">에센스 4장</h3>
-      ${ess}
-      <div style="margin-top:8px"><strong>에센스 톤:</strong> ${toneBadgeFromCounts(ct)}</div>
-    </div>
-  </section>`);
+/* 키카드 인사이트 (주위+나이팅 목록만) */
+function keyInsight(n, rows, cols){
+  // 위치 구하기
+  const idx = n-1; // deck 순서 = 번호순
+  const r = Math.floor(idx/cols), c = idx%cols;
+  const around=[];
+  const dirs=[[ -1, 0],[ 1, 0],[0,-1],[0, 1],[-1,-1],[-1,1],[1,-1],[1,1]]; // 8방향
+  dirs.forEach(([dr,dc])=>{const rr=r+dr, cc=c+dc; if(rr>=0&&rr<rows&&cc>=0&&cc<cols){const no=rr*cols+cc+1; around.push(byNo[no]);}})
+  // 나이팅(기사 이동) – (±1,±2) (±2,±1)
+  const knights=[[1,2],[2,1],[-1,2],[-2,1],[1,-2],[2,-1],[-1,-2],[-2,-1]];
+  const knight=[];
+  knights.forEach(([dr,dc])=>{const rr=r+dr, cc=c+dc; if(rr>=0&&rr<rows&&cc>=0&&cc<cols){const no=rr*cols+cc+1; knight.push(byNo[no]);}})
+  const tone = toneCount([byNo[n],...around,...knight]);
+  return `키 카드: <strong>${n}. ${byNo[n].en}</strong><br>주위 카드(${around.length}): ${around.map(x=>x.no).join(', ')}<br>나이팅(${knight.length}): ${knight.map(x=>x.no).join(', ')}<br>톤: ${toneChip(tone.main)} (긍정 ${tone.pos}/ 부정 ${tone.neg}/ 중립 ${tone.neu})`;
 }
 
-// 질문 토글
-const qT=document.getElementById('qToggle');
-qT.addEventListener('change',()=>{
-  document.getElementById('qInput').style.display=qT.checked?'inline-block':'none';
-  if(!qT.checked) document.getElementById('qInput').value='';
-});
+/* 톤 집계 + 총평 */
+function toneCount(list){
+  const cnt={pos:0,neg:0,neu:0};
+  list.forEach(c=>cnt[c.t]++);
+  const main = cnt.pos>=cnt.neg && cnt.pos>=cnt.neu ? 'pos' : (cnt.neg>=cnt.neu ? 'neg' : 'neu');
+  return {...cnt,main}
+}
+function makeSummary(list, withAdvice){
+  const cnt=toneCount(list);
+  const tonetxt = {pos:'우호적',neg:'주의',neu:'중립'}[cnt.main];
+  const rows = list.map(c=>`• ${c.no}. ${c.en} — ${c.kw}`).join('<br>');
+  const advice = cnt.main==='neg' ? '리스크 관리·일정 재검토.' : (cnt.main==='pos' ? '들어온 제안/연락을 활용해 보세요.' : '상황 관찰과 추가 데이터 확보가 중요합니다.');
+  return `<div class="summary" style="margin-top:12px">
+    <strong>전체 톤:</strong> ${toneChip(cnt.main)} (긍정 ${cnt.pos} / 부정 ${cnt.neg} / 중립 ${cnt.neu})<br>
+    ${rows}<br>${withAdvice?`<br><strong>권고:</strong> ${advice}`:''}
+  </div>`
+}
 
-// 버튼
-btn1.onclick=renderOne; btn3.onclick=renderThree; btn5.onclick=renderFive;
-btnCross.onclick=renderCross; btnGT9x4.onclick=renderGT9x4; btnGT8x4.onclick=renderGT8x4;
-</script></body>
+/********************* 이벤트 바인딩 *********************/
+qToggle.addEventListener('change',()=>{qInput.style.display=qToggle.checked?'inline-block':'none'})
+btn1.addEventListener('click',()=>renderList(draw(1),1))
+btn3.addEventListener('click',()=>renderList(draw(3),3))
+btn5.addEventListener('click',renderFive)
+btnCross.addEventListener('click',renderCross)
+btnGT94.addEventListener('click',()=>renderGT(4,9,false))
+btnGT84.addEventListener('click',()=>renderGT(4,8,true))
+</script>
+</body>
 </html>
