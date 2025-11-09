@@ -15,31 +15,42 @@
   h1{margin:8px 0 18px;text-align:center;font-size:34px;font-weight:800}
   .toolbar{background:var(--pill);border-radius:18px;box-shadow:0 6px 20px var(--shadow);padding:14px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center}
   .qbox{flex:1 1 320px;display:flex;gap:8px;align-items:center}
-  .qbox input{flex:1;padding:10px 12px;border:1px solid #ded6f8;border-radius:12px;background:#fff}
+  .qbox input[type="text"]{flex:1;padding:10px 12px;border:1px solid #ded6f8;border-radius:12px;background:#fff}
   .btn{border:0;padding:10px 16px;border-radius:14px;background:#fff;box-shadow:0 3px 12px var(--shadow);cursor:pointer;font-weight:700}
   .btn:active{transform:translateY(1px)}
   .btn.on{background:var(--pill-on)}
   #stage{margin-top:18px;background:#fff;border-radius:16px;box-shadow:0 6px 18px var(--shadow);padding:16px}
+
   /* 카드 공통 */
-  .card{width:120px;aspect-ratio:3/4;background:var(--card);border-radius:16px;box-shadow:0 4px 14px var(--shadow);display:flex;align-items:center;justify-content:center}
+  .item{text-align:center;cursor:pointer}
+  .card{width:120px;aspect-ratio:3/4;background:var(--card);border-radius:16px;box-shadow:0 4px 14px var(--shadow);display:flex;align-items:center;justify-content:center;margin:auto}
   .card img{width:92%;height:auto;border-radius:10px}
   .caption{margin-top:6px;text-align:center;font-size:13px;line-height:1.15}
   .tone{display:inline-block;margin-top:4px;padding:3px 8px;border-radius:999px;font-size:12px}
   .tone.pos{background:#e8f2ff} .tone.neu{background:#e7ffe8} .tone.neg{background:#ffe7e7}
-  /* 수평 스프레드 */
+
+  /* 스프레드 */
   .row{display:flex;gap:14px;justify-content:center;align-items:flex-start;flex-wrap:nowrap}
-  /* 십자: 겹침 제거 */
+
+  /* 십자: 겹침 제거(격자) */
   .cross{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:640px;margin:0 auto}
   .cross .card{width:100%;max-width:150px}
-  /* 9x4 그랑타블로 */
-  .grand{display:grid;grid-template-columns:repeat(9,1fr);gap:8px}
-  @media (max-width:900px){ .grand{grid-template-columns:repeat(8,1fr)} }
-  @media (max-width:760px){ .grand{grid-template-columns:repeat(7,1fr)} }
-  @media (max-width:640px){ .grand{grid-template-columns:repeat(6,1fr)} }
-  @media (max-width:540px){ .grand{grid-template-columns:repeat(5,1fr)} }
-  @media (max-width:460px){ .grand{grid-template-columns:repeat(4,1fr)} .card{width:94px} }
-  @media (max-width:380px){ .card{width:86px} .cross .card{max-width:120px} .row{gap:10px} }
-  .item{text-align:center;cursor:pointer}
+
+  /* 9x4 그랑타블로 – 모바일에서도 가로 9 고정 */
+  .grand9x4{display:grid;grid-template-columns:repeat(9, minmax(0, 1fr));gap:8px}
+  .grand9x4 .card{width:100%} /* 셀에 맞춰 자동 축소 */
+
+  /* 8x4+4: 상단 8×4 그리드 + 하단 에센스 4장 가로줄 */
+  .grand8x4{display:grid;grid-template-columns:repeat(8, minmax(0,1fr));gap:8px}
+  .essenceRow{display:grid;grid-template-columns:repeat(4, minmax(0,1fr));gap:10px;margin-top:12px}
+
+  /* 작은 화면에서 카드 자동 축소 */
+  @media (max-width:460px){
+    .card{width:86px}
+    .cross .card{max-width:120px}
+    .row{gap:10px}
+  }
+
   .box{margin-top:14px;padding:12px;border:1px dashed #d7cfff;border-radius:12px;background:#fbf9ff}
   .muted{opacity:.7}
 </style>
@@ -51,22 +62,23 @@
   <div class="toolbar">
     <div class="qbox">
       <label><input id="useQ" type="checkbox" /> 질문 입력</label>
-      <input id="q" placeholder="질문을 적어 주세요" />
+      <input id="qtext" type="text" placeholder="질문을 적어 주세요" />
     </div>
     <button class="btn" onclick="drawN(1,this)">1카드</button>
     <button class="btn" onclick="drawN(3,this)">3카드</button>
     <button class="btn" onclick="drawN(5,this)">5카드</button>
     <button class="btn" onclick="drawCross(this)">+ 십자</button>
-    <button class="btn on" onclick="drawGrand(this)">9×4</button>
+    <button class="btn" onclick="drawGrand('9x4',this)">9x4</button>
+    <button class="btn" onclick="drawGrand('8x4+4',this)">8x4+4</button>
   </div>
 
   <div id="stage"></div>
 </div>
 
 <script>
-/* ===== 카드 데이터 (사용자가 준 최종본) ===== */
+/* ===== 카드 데이터 (Key 카드 key 속성 복구) ===== */
 const CARDS = [
-   {num:1, code:"Rider", kr:"기수", key:"소식•이동", add:"빠른 변화·연락 도착", type:"neutral"},
+  {num:1, code:"Rider", kr:"기수", key:"소식•이동", add:"빠른 변화·연락 도착", type:"neutral"},
   {num:2, code:"Clover", kr:"클로버", key:"행운•기회", add:"짧은 찬스·시도 좋음", type:"negative"},
   {num:3, code:"Ship", kr:"선박", key:"여행•확장", add:"관계·환경 변화", type:"neutral"},
   {num:4, code:"House", kr:"집", key:"가정•안정", add:"기반 다지기", type:"neutral"},
@@ -104,137 +116,153 @@ const CARDS = [
   {num:36, code:"Cross", kr:"십자가", key:"고난•신념", add:"책임·버티기", type:"positive"},
 ];
 
-/* ===== 이미지 자동 복구 로더 ===== */
+/* ===== 이미지 로더 (레노먼드-01.png 규칙 우선) ===== */
 const IMG_CANDIDATES = ['','cards/','images/','img/'];
 const EXT_CANDIDATES = ['.png','.webp','.jpg','.PNG','.JPG'];
-function srcFor(num2){
-  // 기본 경로
-  return encodeURI(`레노먼드-${num2}.png`);
-}
-function makeImg(num2){
+const pad2=n=>String(n).padStart(2,'0');
+function makeImg(num){
   const img=document.createElement('img');
-  img.dataset.num2=num2;
-  img.dataset.try=0;
-  img.src=srcFor(num2);
+  img.dataset.num=num; img.dataset.try=0;
+  img.src=encodeURI(`레노먼드-${pad2(num)}.png`);
   img.onerror=function(){ tryNext(this); };
   return img;
 }
 function tryNext(img){
-  let t=parseInt(img.dataset.try,10);
-  const num2=img.dataset.num2;
+  let t=+img.dataset.try; const num=img.dataset.num;
   const total=IMG_CANDIDATES.length*EXT_CANDIDATES.length;
   if(t>=total){ img.onerror=null; return; }
   const p=IMG_CANDIDATES[Math.floor(t/EXT_CANDIDATES.length)];
   const e=EXT_CANDIDATES[t%EXT_CANDIDATES.length];
-  img.dataset.try = t+1;
-  img.src = encodeURI(`${p}레노먼드-${num2}${e}`);
+  img.dataset.try=t+1;
+  img.src=encodeURI(`${p}레노먼드-${pad2(num)}${e}`);
 }
 
 /* ===== 유틸 ===== */
-const pad2=n=>String(n).padStart(2,'0');
 function toneBadge(t){
   if(t==='negative') return '<span class="tone pos">🔵 긍정</span>';
   if(t==='positive') return '<span class="tone neg">🔴 부정</span>';
   return '<span class="tone neu">🟢 중립</span>';
 }
-function cardTile(c,clickable=false,handler=''){
-  const el = document.createElement('div');
-  el.className='item';
-  const card = document.createElement('div'); card.className='card';
-  card.appendChild(makeImg(pad2(c.num)));
-  el.appendChild(card);
-  const cap = document.createElement('div');
-  cap.className='caption';
-  cap.innerHTML = `<b>${c.num}. ${c.code}</b><br>${toneBadge(c.type)}<br>${c.key}<br><span class="muted">${c.add}</span>`;
-  el.appendChild(cap);
-  if(clickable) el.onclick=handler;
-  return el;
+function tile(c,click=null){
+  const root=document.createElement('div'); root.className='item';
+  const card=document.createElement('div'); card.className='card';
+  card.appendChild(makeImg(c.num));
+  root.appendChild(card);
+  const cap=document.createElement('div'); cap.className='caption';
+  cap.innerHTML=`<b>${c.num}. ${c.code}</b><br>${toneBadge(c.type)}<br>${c.key}<br><span class="muted">${c.add}</span>`;
+  root.appendChild(cap);
+  if(click) root.onclick=click;
+  return root;
 }
-function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]);}
+function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);}
+function setOn(btn){document.querySelectorAll('.btn').forEach(b=>b.classList.remove('on')); if(btn) btn.classList.add('on');}
 
-/* ===== 렌더 ===== */
 const stage=document.getElementById('stage');
 
+/* ===== 스프레드들 ===== */
 function drawN(n,btn){
   setOn(btn);
-  const cards = shuffle([...CARDS]).slice(0,n);
+  const pick=shuffle([...CARDS]).slice(0,n);
   stage.innerHTML='';
   const row=document.createElement('div'); row.className='row';
-  cards.forEach(c=> row.appendChild(cardTile(c)));
+  pick.forEach(c=>row.appendChild(tile(c)));
   stage.appendChild(row);
 }
+
 function drawCross(btn){
   setOn(btn);
-  const cs = shuffle([...CARDS]).slice(0,5);
+  const cs=shuffle([...CARDS]).slice(0,5);
   stage.innerHTML='';
   const grid=document.createElement('div'); grid.className='cross';
-  // 상단 가운데
+  // 상
   grid.appendChild(document.createElement('div'));
-  grid.appendChild(cardTile(cs[0]));
+  grid.appendChild(tile(cs[0]));
   grid.appendChild(document.createElement('div'));
-  // 중단 좌-중앙-우
-  grid.appendChild(cardTile(cs[1]));
-  grid.appendChild(cardTile(cs[2]));
-  grid.appendChild(cardTile(cs[3]));
-  // 하단 가운데
+  // 중
+  grid.appendChild(tile(cs[1]));
+  grid.appendChild(tile(cs[2]));
+  grid.appendChild(tile(cs[3]));
+  // 하
   grid.appendChild(document.createElement('div'));
-  grid.appendChild(cardTile(cs[4]));
+  grid.appendChild(tile(cs[4]));
   grid.appendChild(document.createElement('div'));
   stage.appendChild(grid);
 }
-function drawGrand(btn){
+
+function drawGrand(kind,btn){
   setOn(btn);
-  const arr = shuffle([...CARDS]); // 36장 전부
+  const arr=shuffle([...CARDS]); // 36장
   stage.innerHTML='';
-  const grid=document.createElement('div'); grid.className='grand'; grid.id='grand';
-  arr.forEach((c,i)=>{
-    const item=cardTile(c,true,()=>showKey(i,arr));
-    grid.appendChild(item);
-  });
-  stage.appendChild(grid);
+
+  if(kind==='9x4'){
+    const grid=document.createElement('div'); grid.className='grand9x4'; grid.id='grand';
+    arr.forEach((c,i)=> grid.appendChild(tile(c,()=>showKey(i,arr,'9x4'))));
+    stage.appendChild(grid);
+  }else{ // 8x4+4
+    const grid=document.createElement('div'); grid.className='grand8x4'; grid.id='grand84';
+    const first32=arr.slice(0,32), essence=arr.slice(32); // 마지막 4장 에센스
+    first32.forEach((c,i)=> grid.appendChild(tile(c,()=>showKey(i,first32,'8x4'))));
+    stage.appendChild(grid);
+
+    const es=document.createElement('div'); es.className='essenceRow'; es.id='essenceRow';
+    essence.forEach(c=> es.appendChild(tile(c)));
+    stage.appendChild(es);
+  }
+
+  // 상세 패널(키카드 포함) – 키카드 이미지가 확실히 보이도록 슬롯 후 DOM 삽입
   const box=document.createElement('div'); box.className='box'; box.id='detail';
-  box.innerHTML='카드를 누르면 키 카드 기준의 <b>주위 카드</b>와 <b>나이팅</b>을 아래에 보여줍니다.';
+  box.innerHTML='<b>키 카드를 누르면</b> 아래에 키 카드와 주위/나이팅을 보여줍니다.<div id="keycard-slot" style="margin-top:8px"></div>';
   stage.appendChild(box);
 }
-function showKey(idx,arr){
-  const k=arr[idx];
-  // 9x4 인덱스에서 상하좌우, 나이팅 계산
-  const cols=9;
-  const around=[];
+
+/* 키카드 상세 */
+function showKey(idx,arr,mode){
+  const cols = (mode==='9x4'?9:8);
+  const rows = 4;
   const r=Math.floor(idx/cols), c=idx%cols;
+
+  const around=[];
   function pushIf(rr,cc){
-    const i=rr*cols+cc;
-    if(rr>=0&&rr<4&&cc>=0&&cc<9) around.push(arr[i]);
+    if(rr>=0&&rr<rows&&cc>=0&&cc<cols){
+      around.push(arr[rr*cols+cc]);
+    }
   }
-  // 주변
+  // 4방
   pushIf(r,c-1); pushIf(r,c+1); pushIf(r-1,c); pushIf(r+1,c);
-  // 나이팅 (말 이동)
+  // 나이팅
   const knight=[];
   [[-1,-2],[-2,-1],[+1,-2],[+2,-1],[+1,+2],[+2,+1],[-1,+2],[-2,+1]].forEach(([dr,dc])=>{
     const rr=r+dr, cc=c+dc;
-    if(rr>=0&&rr<4&&cc>=0&&cc<9) knight.push(arr[rr*cols+cc]);
+    if(rr>=0&&rr<rows&&cc>=0&&cc<cols) knight.push(arr[rr*cols+cc]);
   });
 
+  const key = arr[idx];
   const detail=document.getElementById('detail');
   detail.innerHTML = `
-    <div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
-      <div>${cardTile(k).outerHTML}</div>
+    <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+      <div style="min-width:120px">
+        <div id="keycard-slot"></div>
+        <div class="caption" style="text-align:left">
+          <b>${key.num}. ${key.code}</b><br>
+          ${toneBadge(key.type)}<br>
+          ${key.key}<br><span class="muted">${key.add}</span>
+        </div>
+      </div>
       <div>
         <b>주위 카드</b><br>
         ${around.map(x=>`${x.num}. ${x.code} — ${x.key} ${toneBadge(x.type)}`).join('<br>') || '—'}
-        <div style="height:8px"></div>
+        <div style="height:10px"></div>
         <b>나이팅</b><br>
         ${knight.map(x=>`${x.num}. ${x.code} — ${x.key} ${toneBadge(x.type)}`).join('<br>') || '—'}
       </div>
     </div>
   `;
+  // 실제 카드 이미지 DOM을 슬롯에 삽입(이미지가 확실히 보이게)
+  const slot=document.getElementById('keycard-slot');
+  const node=tile(key); slot.appendChild(node.firstChild); // 카드만 넣음
 }
 
-/* 버튼 토글 */
-function setOn(btn){
-  document.querySelectorAll('.btn').forEach(b=>b.classList.remove('on'));
-  if(btn) btn.classList.add('on');
-}
+/* 초기 로드: 아무 스프레드도 자동 실행하지 않음 */
 </script>
 </body>
 </html>
