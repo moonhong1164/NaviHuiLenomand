@@ -1,386 +1,284 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>NAVI&HUI LENORMAND</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navi&Hui Lenormand</title>
+
 <style>
-  :root{
-    --bg:#f1eafb;
-    --panel:#ffffff;
-    --ink:#3a2e6b;
-    --muted:#6f65a8;
-    --pill-pos:#3b82f6;
-    --pill-neg:#ef4444;
-    --pill-neu:#22c55e;
-    --ring:#e9e1fb;
-    --shadow:0 10px 24px rgba(46,16,101,.12);
-    --radius:20px;
-  }
-  html,body{margin:0;background:var(--bg);color:var(--ink);font-family: ui-sans-serif,system-ui, -apple-system,'Apple SD Gothic Neo','Noto Sans KR',Roboto,'Helvetica Neue',Arial,'맑은 고딕','Malgun Gothic',sans-serif;}
-  .wrap{max-width:960px;margin:0 auto;padding:18px 14px 120px;}
-  .h1{font-weight:900;font-size:clamp(28px, 4.8vw, 40px);letter-spacing:.4px;}
-  .toolbar{background:var(--panel);border-radius:24px;padding:14px;box-shadow:var(--shadow);margin-top:10px}
-  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-  .btn{background:#fff;border:2px solid var(--ring);padding:12px 16px;border-radius:14px;font-weight:800;color:var(--muted);cursor:pointer}
-  .btn:hover{border-color:#c9bdf6}
-  .btn.primary{background:#f0ecff;color:#2b2361}
-  .qwrap{display:flex;align-items:center;gap:10px}
-  .qwrap input[type="text"]{flex:1;border:2px solid var(--ring);border-radius:12px;padding:10px 12px;font-size:15px}
+body{
+  font-family:'Pretendard', sans-serif;
+  background:#f6efff;
+  margin:0; padding:0;
+}
 
-  /* stage */
-  .stage{margin-top:16px}
-  .panel{background:var(--panel);border-radius:22px;box-shadow:var(--shadow);padding:16px;margin-top:14px}
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
 
-  /* card */
-  .card-box{width:min(19.5vw,120px);aspect-ratio:3/4;border-radius:16px;background:#ede7ff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.06);position:relative;overflow:hidden}
-  .card-box img{width:88%;height:auto;display:block}
-  .label{position:absolute;left:10px;bottom:8px;font-weight:900;font-size:12px;color:#fff;background:#000;border-radius:8px;padding:3px 6px;opacity:.8}
-  .tone{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;font-weight:900;color:#fff;font-size:12px}
-  .tone.pos{background:var(--pill-pos)}
-  .tone.neg{background:var(--pill-neg)}
-  .tone.neu{background:var(--pill-neu)}
-  .tone-wrap{margin-top:6px}
+h1{
+  font-size:34px;
+  font-weight:800;
+  text-align:center;
+  color:#2b1560;
+}
 
-  /* rows below card in lists */
-  .card-name{font-weight:900;margin-top:8px}
-  .mini{width:min(34vw,180px)}
-  .mini .card{width:100%;aspect-ratio:3/4;border-radius:14px;background:#ede7ff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.06)}
-  .mini .card img{width:86%}
-  .mini .mini-meta{font-size:12px;color:#5b528e;margin-top:6px;line-height:1.3}
+/* 버튼 */
+button{
+  border:none;
+  padding:12px 22px;
+  border-radius:12px;
+  margin:4px;
+  font-size:17px;
+  font-weight:600;
+  cursor:pointer;
+}
 
-  /* simple lists */
-  .summary{background:#faf9ff;border:2px dashed #e2dbff;border-radius:18px;padding:14px;margin-top:14px}
-  .summary b{font-weight:900}
-  .note{color:#5b528e}
+.one-btn,.three-btn,.five-btn,.cross-btn{ background:#ffffff; }
+.grand-btn{ background:#c6ffcd; }
 
-  /* flex helpers */
-  .flex{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
-  .center{justify-content:center}
+/* 결과 영역 */
+#output{
+  margin-top:20px;
+  background:white;
+  padding:18px;
+  border-radius:15px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.08);
+}
 
-  /* 3/5 spread rows fit */
-  .spread-row{display:flex;gap:14px;align-items:flex-start;justify-content:center;flex-wrap:nowrap}
-  .spread-row .card-box{width:min(24vw,140px)}
+/* 카드 공통 */
+.card-box{
+  width:120px;
+  aspect-ratio:3/4;
+  background:white;
+  border-radius:15px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.15);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  margin:auto;
+}
 
-  /* CROSS (십자): column layout that never overlaps */
-  .cross-grid{--w:min(28vw,160px); display:grid; grid-template-columns: var(--w) var(--w) var(--w); grid-template-rows: var(--w) var(--w) var(--w); gap:12px; align-items:center; justify-content:center}
-  .cross-grid .card-box{width:var(--w)}
-  .cross-center{grid-column:2;grid-row:2}
-  .cross-top{grid-column:2;grid-row:1}
-  .cross-left{grid-column:1;grid-row:2}
-  .cross-right{grid-column:3;grid-row:2}
-  .cross-bottom{grid-column:2;grid-row:3}
+.card-box img{
+  width:90%;
+  height:auto;
+}
 
-  /* GRAND TABLEAU */
-  .gt-grid{display:grid;gap:8px;justify-content:center}
-  .gt-grid .card-box{width:min(10.8vw,86px)}
-  .gt-hint{font-size:14px;color:#5b528e;margin-bottom:8px}
+/* 십자 스프레드 겹침 해결 */
+.cross-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  justify-items:center;
+  align-items:center;
+  max-width:100%;
+}
 
-  @media (max-width:560px){
-    .spread-row .card-box{width:min(28vw,128px)}
-    .cross-grid{--w:min(30vw,150px)}
-    .gt-grid .card-box{width:min(12vw,74px)}
-  }
+.cross-grid .card-box{
+  width:100%;
+  max-width:140px;
+}
+
+/* 그랑타블로 줄바꿈 */
+.grand-wrapper{
+  display:grid;
+  grid-template-columns:repeat(9,1fr);
+  gap:6px;
+  margin:10px 0;
+}
+@media(max-width:700px){
+  .grand-wrapper{ grid-template-columns:repeat(6,1fr); }
+}
+@media(max-width:500px){
+  .grand-wrapper{ grid-template-columns:repeat(4,1fr); }
+}
+
+.hidden{display:none;}
+
+.result-list{
+  margin-top:10px;
+  border-top:1px dashed #aaa;
+  padding-top:8px;
+}
 </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="h1">NAVI&HUI LENORMAND</div>
+<div class="container">
+<h1>NAVI&HUI LENORMAND</h1>
 
-    <div class="toolbar">
-      <div class="row qwrap">
-        <label class="row" style="font-weight:900;gap:8px">
-          <input type="checkbox" id="qUse" />
-          질문 입력
-        </label>
-        <input id="qText" type="text" placeholder="질문을 적어 주세요" />
-      </div>
-      <div class="row" style="margin-top:10px">
-        <button class="btn" id="btn1">1카드</button>
-        <button class="btn" id="btn3">3카드</button>
-        <button class="btn" id="btn5">5카드</button>
-        <button class="btn" id="btnCross">+ 십자</button>
-        <button class="btn" id="btn9x4">9×4</button>
-        <button class="btn" id="btn8x4">8×4+4</button>
-      </div>
-    </div>
+<label><input type="checkbox" id="useQuestion"> 질문 입력</label>
+<input id="questionBox" placeholder="질문을 적어 주세요" style="width:70%;padding:8px;border-radius:10px;border:1px solid #ddd;">
+<br><br>
 
-    <div id="stage" class="stage"></div>
-  </div>
+<button class="one-btn" onclick="drawCards(1)">1카드</button>
+<button class="three-btn" onclick="drawCards(3)">3카드</button>
+<button class="five-btn" onclick="drawCards(5)">5카드</button>
+<button class="cross-btn" onclick="drawCross()">+ 십자</button>
+<button class="grand-btn" onclick="drawGrand()">9×4</button>
+<button class="grand-btn" onclick="drawGrand()">8×4+4</button>
+
+<div id="output"></div>
+</div>
 
 <script>
-/* ================== 데이터 ================== */
+/* ✅ 새로운 카드 데이터 (Q1=1번, Q2=1번, Q3=번호+영문코드) */
 const CARDS = [
-  {num:1, code:"Rider", kr:"기수", key:"소식•이동", add:"빠른 변화·연락 도착", type:"positive"},
-  {num:2, code:"Clover", kr:"클로버", key:"행운•기회", add:"짧은 찬스·시도 좋음", type:"positive"},
+  {num:1, code:"Rider", kr:"기수", key:"소식•이동", add:"빠른 변화·연락 도착", type:"neutral"},
+  {num:2, code:"Clover", kr:"클로버", key:"행운•기회", add:"짧은 찬스·시도 좋음", type:"negative"},
   {num:3, code:"Ship", kr:"선박", key:"여행•확장", add:"관계·환경 변화", type:"neutral"},
   {num:4, code:"House", kr:"집", key:"가정•안정", add:"기반 다지기", type:"neutral"},
-  {num:5, code:"Tree", kr:"나무", key:"건강•성장", add:"장기 성장·회복", type:"positive"},
-  {num:6, code:"Cloud", kr:"구름", key:"혼란•불확실", add:"판단 보류·챙기기", type:"negative"},
-  {num:7, code:"Snake", kr:"뱀", key:"유혹•기만", add:"겉과속 다름·주의", type:"negative"},
-  {num:8, code:"Coffin", kr:"관", key:"끝•전환", add:"정리·재출발", type:"negative"},
-  {num:9, code:"Bouquet", kr:"부케", key:"선물•기쁨", add:"호의 상승", type:"positive"},
-  {num:10, code:"Scythe", kr:"낫", key:"단절•결정", add:"빠른 선택", type:"negative"},
-  {num:11, code:"Whip", kr:"채찍", key:"갈등•반복", add:"루프 끊기", type:"negative"},
-  {num:12, code:"Bird", kr:"새", key:"대화•소문", add:"말 많은 시기", type:"neutral"},
-  {num:13, code:"Child", kr:"아이", key:"새 시작•순수", add:"작지만 성장 큼", type:"positive"},
+  {num:5, code:"Tree", kr:"나무", key:"건강•성장", add:"장기 성장·회복", type:"neutral"},
+  {num:6, code:"Cloud", kr:"구름", key:"혼란•판단 보류", add:"판단 보류·챙기기", type:"positive"},
+  {num:7, code:"Snake", kr:"뱀", key:"유혹•기만", add:"겉과속 다름·주의", type:"positive"},
+  {num:8, code:"Coffin", kr:"관", key:"끝•전환", add:"정리·재출발", type:"positive"},
+  {num:9, code:"Bouquet", kr:"부케", key:"선물•기쁨", add:"호의 상승", type:"negative"},
+  {num:10, code:"Scythe", kr:"낫", key:"단절•결정", add:"빠른 선택", type:"positive"},
+  {num:11, code:"Whip", kr:"채찍", key:"갈등•반복", add:"루프 끊기", type:"positive"},
+  {num:12, code:"Birds", kr:"새", key:"대화•소문", add:"말 많은 시기", type:"neutral"},
+  {num:13, code:"Child", kr:"아이", key:"새 시작•순수", add:"작지만 성장 큼", type:"negative"},
   {num:14, code:"Fox", kr:"여우", key:"일•의심", add:"계약·정보 재확인", type:"neutral"},
-  {num:15, code:"Bear", kr:"곰", key:"힘•보호", add:"후원·리더십", type:"positive"},
-  {num:16, code:"Stars", kr:"별", key:"희망•목표", add:"비전 명확", type:"positive"},
-  {num:17, code:"Stork", kr:"황새", key:"변화•개선", add:"습관 업데이트", type:"positive"},
-  {num:18, code:"Dog", kr:"개", key:"신뢰•우정", add:"동맹·파트너십", type:"positive"},
+  {num:15, code:"Bear", kr:"곰", key:"힘•보호", add:"후원·리더십", type:"neutral"},
+  {num:16, code:"Stars", kr:"별", key:"희망•목표", add:"비전 명확", type:"negative"},
+  {num:17, code:"Stork", kr:"황새", key:"변화•개선", add:"습관 업데이트", type:"neutral"},
+  {num:18, code:"Dog", kr:"개", key:"신뢰•우정", add:"동맹·파트너십", type:"negative"},
   {num:19, code:"Tower", kr:"탑", key:"제도•독립", add:"홀로서기", type:"neutral"},
-  {num:20, code:"Garden", kr:"정원", key:"모임•공개", add:"좋은 평판", type:"positive"},
-  {num:21, code:"Mountain", kr:"산", key:"장애•지연", add:"시간 필요", type:"negative"},
+  {num:20, code:"Garden", kr:"정원", key:"모임•공개", add:"좋은 평판", type:"neutral"},
+  {num:21, code:"Mountain", kr:"산", key:"장애•지연", add:"시간 필요", type:"positive"},
   {num:22, code:"Crossroad", kr:"갈림길", key:"선택•결정", add:"데이터 비교", type:"neutral"},
-  {num:23, code:"Mice", kr:"쥐", key:"손실•소모", add:"미세누수 점검", type:"negative"},
-  {num:24, code:"Heart", kr:"하트", key:"사랑•감정", add:"감정 회복", type:"positive"},
-  {num:25, code:"Ring", kr:"반지", key:"계약•순환", add:"장기 커밋", type:"neutral"},
+  {num:23, code:"Mice", kr:"쥐", key:"손실•소모", add:"미세누수 점검", type:"positive"},
+  {num:24, code:"Heart", kr:"하트", key:"사랑•감정", add:"감정 회복", type:"negative"},
+  {num:25, code:"Ring", kr:"반지", key:"계약•순환", add:"장기 커밋", type:"negative"},
   {num:26, code:"Book", kr:"책", key:"비밀•학습", add:"정보 미공개", type:"neutral"},
-  {num:27, code:"Letter", kr:"편지", key:"연락•문서", add:"증거·통보", type:"positive"},
+  {num:27, code:"Letter", kr:"편지", key:"연락•문서", add:"증거·통보", type:"neutral"},
   {num:28, code:"Man", kr:"남성", key:"핵심 인물", add:"중심 남성", type:"neutral"},
   {num:29, code:"Woman", kr:"여성", key:"핵심 인물", add:"중심 여성", type:"neutral"},
-  {num:30, code:"Lily", kr:"백합", key:"평화•성숙", add:"휴식·품위", type:"positive"},
-  {num:31, code:"Sun", kr:"태양", key:"성공•활력", add:"긍정 결과", type:"positive"},
-  {num:32, code:"Moon", kr:"달", key:"명예•감정", add:"감정 리듬", type:"positive"},
-  {num:33, code:"Key", kr:"열쇠", key2:"해결•정답", add:"돌파구", type:"positive"},
-  {num:34, code:"Fish", kr:"물고기", key:"재물•교류", add:"거래 증가", type:"neutral"},
-  {num:35, code:"Anchor", kr:"닻", key:"안정•고정", add:"지속성", type:"neutral"},
-  {num:36, code:"Cross", kr:"십자가", key:"고난•신념", add:"책임·버티기", type:"negative"},
+  {num:30, code:"Lily", kr:"백합", key:"평화•성숙", add:"휴식·품위", type:"neutral"},
+  {num:31, code:"Sun", kr:"태양", key:"성공•활력", add:"긍정 결과", type:"negative"},
+  {num:32, code:"Moon", kr:"달", key:"명예•감정", add:"감정 리듬", type:"negative"},
+  {num:33, code:"Key", kr:"열쇠", key2:"해결•시작", add:"돌파구", type:"negative"},
+  {num:34, code:"Fish", kr:"물고기", key:"재물•교류", add:"거래 증가", type:"negative"},
+  {num:35, code:"Anchor", kr:"닻", key:"안정•고정", add:"지속성", type:"negative"},
+  {num:36, code:"Cross", kr:"십자가", key:"고난•신념", add:"책임·버티기", type:"positive"},
 ];
 
-// 톤 helpers
-const toneMap = {positive:['pos','긍정','🔵'], negative:['neg','부정','🔴'], neutral:['neu','중립','🟢']};
-const toneKey = t => toneMap[t]?.[0] || 'neu';
-const toneText = t => toneMap[t]?.[1] || '중립';
-const toneEmoji = t => toneMap[t]?.[2] || '🟢';
-
-// 이미지 태그 (01~36, 폴더 폴백)
-function imageTag(num, code){
-  const n = String(num).padStart(2,'0');
-  const src1 = `images/레노먼드-${n}.png`;
-  const src2 = `img/lenormand/레노먼드-${n}.png`;
-  return `<img alt="${num}.${code}" src="${src1}" onerror="this.onerror=null;this.src='${src2}'">`;
-}
-
-// 공통
-const stage = document.getElementById('stage');
-const Qblock = ()=> document.getElementById('qUse').checked && document.getElementById('qText').value.trim()
-  ? `<div class="summary"><b>질문:</b> ${escapeHtml(document.getElementById('qText').value)}</div>` : '';
-
-function clearAll(){ stage.innerHTML=''; }
-function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a; }
-function escapeHtml(s){ return s.replace(/[&<>"']/g, m=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
-
-function cardBox(c){ // 작은 정보만(그림 중심)
-  return `<div class="card-box" data-num="${c.num}">
-    ${imageTag(c.num,c.code)}
-    <div class="label">${c.num}</div>
-  </div>`;
-}
-function pill(c){ return `<span class="tone ${toneKey(c.type)}">${toneEmoji(c.type)} ${toneText(c.type)}</span>`; }
-
-// 미니 카드 블록 (요약용)
-function miniBlock(c){
-  return `
-  <div class="mini">
-    <div class="card">${imageTag(c.num,c.code)}</div>
-    <div class="card-name">${c.num}. ${c.code}</div>
-    <div class="tone-wrap">${pill(c)}</div>
-    <div class="mini-meta">
-      <div class="k">키워드: ${c.key}</div>
-      <div>추가: ${c.add}</div>
-    </div>
-  </div>`;
-}
-
-/* ============ 스프레드 ============ */
-function r1(){
-  clearAll();
-  const c = shuffle([...CARDS])[0];
-  stage.innerHTML = `
-    <div class="panel">${Qblock()}
-      <div class="flex center"><div class="card-box">${imageTag(c.num,c.code)}</div></div>
-      <div class="summary">
-        <b>${c.num}. ${c.code} (${c.kr})</b><div class="tone-wrap">${pill(c)}</div>
-        <div style="margin-top:6px">키워드: ${c.key}</div>
-        <div>추가: ${c.add}</div>
-      </div>
-    </div>`;
-}
-function r3(){
-  clearAll();
-  const pick = shuffle([...CARDS]).slice(0,3);
-  stage.innerHTML = `
-    <div class="panel">${Qblock()}
-      <div class="spread-row">${pick.map(cardBox).join('')}</div>
-      <div class="summary"><b>전체 톤:</b>
-        ${toneEmoji(majorTone(pick))} ${toneText(majorTone(pick))}
-        <ul>${pick.map(c=>`<li>${c.num}. ${c.code} — ${c.key}</li>`).join('')}</ul>
-      </div>
-    </div>`;
-}
-function r5(){
-  clearAll();
-  const pick = shuffle([...CARDS]).slice(0,5);
-  stage.innerHTML = `
-    <div class="panel">${Qblock()}
-      <div class="spread-row" style="flex-wrap:wrap">${pick.map(cardBox).join('')}</div>
-      <div class="summary"><b>전체 톤:</b>
-        ${toneEmoji(majorTone(pick))} ${toneText(majorTone(pick))}
-        <ul>${pick.map(c=>`<li>${c.num}. ${c.code} — ${c.key}</li>`).join('')}</ul>
-      </div>
-    </div>`;
-}
-function rCross(){
-  clearAll();
-  const [center, left, right, top, bottom] = shuffle([...CARDS]).slice(0,5);
-  stage.innerHTML = `
-    <div class="panel">${Qblock()}
-      <div class="cross-grid">
-        <div class="card-box cross-top">${imageTag(top.num,top.code)}</div>
-        <div class="card-box cross-left">${imageTag(left.num,left.code)}</div>
-        <div class="card-box cross-center">${imageTag(center.num,center.code)}</div>
-        <div class="card-box cross-right">${imageTag(right.num,right.code)}</div>
-        <div class="card-box cross-bottom">${imageTag(bottom.num,bottom.code)}</div>
-      </div>
-      <div class="summary">
-        <b>전체 톤:</b> ${toneEmoji(majorTone([center,left,right,top,bottom]))} ${toneText(majorTone([center,left,right,top,bottom]))}
-        <ul>
-          <li>${center.num}. ${center.code} — 핵심</li>
-          <li>${left.num}. ${left.code} — 과거/원인</li>
-          <li>${right.num}. ${right.code} — 결과/행동</li>
-          <li>${top.num}. ${top.code} — 의식/표면</li>
-          <li>${bottom.num}. ${bottom.code} — 무의식/근저</li>
-        </ul>
-      </div>
-    </div>`;
-}
-
-/* ====== 그랑타블로 (키카드 → 주위/나이팅 아래 표시) ====== */
-function rGT(mode){
-  clearAll();
-
-  const is8 = (mode === "8x4+4");
-  const cols = is8 ? 8 : 9;
-  const total = is8 ? 32 : 36;
-
-  const pool = [...CARDS]; shuffle(pool);
-  const main = pool.slice(0, total);
-  const ess  = is8 ? pool.slice(32) : [];
-
-  const wrap = document.createElement('div');
-  wrap.className = 'panel'; wrap.id = 'gtW';
-  wrap.innerHTML = `${Qblock()}`;
-  stage.appendChild(wrap);
-
-  // hint
-  const hint = document.createElement('div');
-  hint.className = 'gt-hint';
-  hint.innerHTML = `카드를 눌러 <b>키 카드</b>의 주위 카드와 <b>나이팅</b>을 <u>아래</u>에서 확인하세요.`;
-  wrap.appendChild(hint);
-
-  // grid
-  const grid = document.createElement('div');
-  grid.className = 'gt-grid';
-  grid.style.gridTemplateColumns = `repeat(${cols}, auto)`;
-  grid.innerHTML = main.map(cardBox).join('');
-  wrap.appendChild(grid);
-
-  // 행별 요약
-  const rows = Math.ceil(total/cols);
-  const rowBox = document.createElement('div');
-  rowBox.className = 'summary';
-  rowBox.innerHTML = `<b>행별 카드</b><ul>${
-    Array.from({length: rows}).map((_,r)=>{
-      const slice = main.slice(r*cols, r*cols+cols);
-      return `<li>${slice.map(c=>`${c.num}. ${c.code}`).join(' · ')}</li>`;
-    }).join('')
-  }</ul>`;
-  wrap.appendChild(rowBox);
-
-  // 에센스
-  if(is8){
-    const essBox = document.createElement('div');
-    essBox.className = 'summary';
-    essBox.innerHTML = `<b>에센스 4장</b>
-      <div class="flex center">${ess.map(miniBlock).join('')}</div>`;
-    wrap.appendChild(essBox);
+// 랜덤
+function pick(n){
+  let arr=[...CARDS];
+  let res=[];
+  for(let i=0;i<n;i++){
+    let r=Math.floor(Math.random()*arr.length);
+    res.push(arr[r]);
+    arr.splice(r,1);
   }
+  return res;
+}
 
-  // 상세 출력 영역
-  const detail = document.createElement('div');
-  detail.className = 'summary';
-  detail.id = 'gtDetail';
-  detail.innerHTML = `<b class="note">키 카드를 선택하면 아래에 상세가 표시됩니다.</b>`;
-  wrap.appendChild(detail);
+// 카드 박스 HTML
+function cardHTML(c){
+  let img=`<img src="cards/레노먼드-${String(c.num).padStart(2,'0')}.png">`;
+  let tone = (c.type==='negative')?'🔵 긍정':
+             (c.type==='positive')?'🔴 부정':'🟢 중립';
+  return `
+  <div class="card-box">
+   ${img}
+  </div>
+  <div style="text-align:center;margin:4px 0;">
+    <b>${c.num}. ${c.code}(${c.kr})</b><br>
+    ${tone}<br>
+    ${c.key}<br>
+    ${c.add}
+  </div>
+  `;
+}
 
-  // 클릭 핸들러
-  grid.querySelectorAll('.card-box').forEach((box,i)=>{
-    box.style.cursor = 'pointer';
-    box.addEventListener('click', ()=> showKeyDetail(i));
+/* ✅ 1/3/5카드 */
+function drawCards(n){
+  let cards=pick(n);
+  let out=`<h3>${n}카드 결과</h3>`;
+  cards.forEach(c=> out+=cardHTML(c));
+  document.getElementById("output").innerHTML=out;
+}
+
+/* ✅ 십자 — 겹침 없는 버전 */
+function drawCross(){
+  let c=pick(5);
+  let out=`
+  <h3>십자 스프레드</h3>
+  <div class="cross-grid">
+    <div></div>
+    ${cardHTML(c[0])}
+    <div></div>
+    ${cardHTML(c[1])}
+    ${cardHTML(c[2])}
+    ${cardHTML(c[3])}
+    <div></div>
+    ${cardHTML(c[4])}
+    <div></div>
+  </div>
+  `;
+  document.getElementById("output").innerHTML=out;
+}
+
+/* ✅ 그랑타블로 — 줄바꿈 정상 + 클릭 시 주위카드/나이팅 */
+function drawGrand(){
+  let arr=pick(36);
+  let out=`<h3>그랑타블로 (카드를 눌러 상세 보기)</h3><div class="grand-wrapper">`;
+
+  arr.forEach((c,i)=>{
+    out+=`
+    <div onclick="showGrandDetail(${i})" style="cursor:pointer;">
+      <div class="card-box">
+        <img src="cards/레노먼드-${String(c.num).padStart(2,'0')}.png">
+      </div>
+      <div style="font-size:13px;text-align:center;">${c.num}. ${c.code}</div>
+    </div>`;
   });
 
-  function showKeyDetail(idx){
-    const r = Math.floor(idx/cols), c = idx%cols;
-    const key = main[idx];
+  out+=`</div><div id="grand-detail"></div>`;
+  document.getElementById("output").innerHTML=out;
 
-    // 주변 8칸
-    const around = [];
-    for(let dr=-1; dr<=1; dr++){
-      for(let dc=-1; dc<=1; dc++){
-        if(dr===0 && dc===0) continue;
-        const rr=r+dr, cc=c+dc;
-        if(rr>=0 && rr<rows && cc>=0 && cc<cols){
-          const i=rr*cols+cc;
-          if(i<main.length) around.push(main[i]);
-        }
-      }
-    }
-    // 나이팅(기사 이동)
-    const K=[[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
-    const knight=[];
-    for(const [dr,dc] of K){
-      const rr=r+dr, cc=c+dc;
-      if(rr>=0 && rr<rows && cc>=0 && cc<cols){
-        const i=rr*cols+cc;
-        if(i<main.length) knight.push(main[i]);
-      }
-    }
-
-    detail.innerHTML = `
-      <div class="flex center">
-        <div class="mini">
-          <div style="font-weight:900;margin:0 0 6px">키 카드: ${key.num}. ${key.code} (${key.kr}) — ${key.key}</div>
-          <div class="card">${imageTag(key.num,key.code)}</div>
-          <div class="tone-wrap">${pill(key)}</div>
-        </div>
-      </div>
-      <div style="height:8px"></div>
-      <b>주위 카드</b>
-      <div class="flex center">${around.map(miniBlock).join('')}</div>
-      <div style="height:8px"></div>
-      <b>나이팅</b>
-      <div class="flex center">${knight.map(miniBlock).join('')}</div>
-    `;
-  }
+  window.GD=arr; // 저장
 }
 
-/* ============ 유틸 ============ */
-function majorTone(list){
-  const score = {positive:0, negative:0, neutral:0};
-  list.forEach(c=>score[c.type]++);
-  const order = Object.entries(score).sort((a,b)=>b[1]-a[1]);
-  return order[0][0];
-}
+// 키카드 상세
+function showGrandDetail(i){
+  let base=window.GD;
+  let kc=base[i];
 
-/* ============ 이벤트 바인딩 ============ */
-document.getElementById('btn1').onclick = r1;
-document.getElementById('btn3').onclick = r3;
-document.getElementById('btn5').onclick = r5;
-document.getElementById('btnCross').onclick = rCross;
-document.getElementById('btn9x4').onclick = ()=>rGT('9x4');
-document.getElementById('btn8x4').onclick = ()=>rGT('8x4+4');
+  // 주위카드 (간단: 앞뒤좌우 + 인덱스 체크)
+  let around=[];
+  if(base[i-1]) around.push(base[i-1]);
+  if(base[i+1]) around.push(base[i+1]);
+  if(base[i-9]) around.push(base[i-9]);
+  if(base[i+9]) around.push(base[i+9]);
+
+  // 나이팅 (↗ ↘ ↙ ↖)
+  let knight=[];
+  if(base[i-8]) knight.push(base[i-8]);
+  if(base[i+10]) knight.push(base[i+10]);
+  if(base[i+8]) knight.push(base[i+8]);
+  if(base[i-10]) knight.push(base[i-10]);
+
+  let tone={
+    negative:'🔵 긍정',
+    positive:'🔴 부정',
+    neutral :'🟢 중립'
+  };
+
+  let html=`
+  <h3>키 카드: ${kc.num}. ${kc.code} — ${kc.key}</h3>
+  ${cardHTML(kc)}
+  <div><b>주위 카드</b></div>
+  ${around.map(c=>`${c.num}. ${c.code} — ${c.key} (${tone[c.type]})`).join("<br>")}
+  <div style="margin-top:8px;"><b>나이팅</b></div>
+  ${knight.map(c=>`${c.num}. ${c.code} — ${c.key} (${tone[c.type]})`).join("<br>")}
+  `;
+  document.getElementById("grand-detail").innerHTML=html;
+}
 </script>
 </body>
 </html>
