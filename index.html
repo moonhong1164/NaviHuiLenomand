@@ -4,23 +4,29 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>NAVI&HUI LENORMAND</title>
+
 <style>
   :root{
     --bg:#efe9fb; --panel:#ffffff; --ink:#2b2240; --muted:#6f65a6;
     --shadow:0 10px 30px rgba(40,20,60,.08);
-    --pos:#4c88ff; --neg:#e25566; --neu:#2ea66d; /* 파랑/빨강/초록 */
+    --pos:#4c88ff; --neg:#e25566; --neu:#2ea66d;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter, Pretendard, Apple SD Gothic Neo, "맑은 고딕", sans-serif}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter, Pretendard, Apple SD Gothic Neo, sans-serif}
+
   h1{font-size:clamp(22px,3.6vw,40px);letter-spacing:.5px;margin:28px 18px 6px;font-weight:900}
+
   .wrap{max-width:980px;margin:0 auto;padding:0 16px 60px}
 
-  /* 컨트롤바 + 질문칸(복구) */
-  .toolbar{background:rgba(255,255,255,.65);backdrop-filter:blur(6px);border-radius:20px;padding:18px;margin:10px 0 20px;box-shadow:var(--shadow)}
+  /* ── 버튼 + 질문칸 ── */
+  .toolbar{background:rgba(255,255,255,.65);backdrop-filter:blur(6px);border-radius:20px;
+    padding:18px;margin:10px 0 20px;box-shadow:var(--shadow)}
   .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-  .btn{border:none;border-radius:14px;padding:10px 16px;font-weight:700;background:#f1eeff;color:#4a3d93;cursor:pointer;box-shadow:0 4px 14px rgba(70,50,120,.08)}
+  .btn{border:none;border-radius:14px;padding:10px 16px;font-weight:700;background:#f1eeff;color:#4a3d93;
+    cursor:pointer;box-shadow:0 4px 14px rgba(70,50,120,.08)}
   .btn:active{transform:translateY(1px)}
   .btn.g{background:#e8fff4;color:#0f7148}
+
   .ask{display:flex;gap:10px;align-items:center;margin-right:auto}
   .ask input[type="text"]{height:38px;padding:0 10px;border-radius:10px;border:1px solid #e6e0ff;width:240px;background:#fff}
   .hidden{display:none}
@@ -29,42 +35,50 @@
   .panel{background:var(--panel);border-radius:18px;padding:18px;box-shadow:var(--shadow)}
   .note{color:var(--muted);font-weight:600}
 
-  /* 카드 공통 */
+  /* 카드 */
   .cards{display:flex;gap:16px;justify-content:center;flex-wrap:nowrap}
-  .card-box{width:min(90px,24vw)}
+  .card-box{width:min(90px,24vw);cursor:pointer}
   .card{position:relative;border-radius:16px;background:#ffffff;box-shadow:0 6px 16px rgba(50,20,90,.12);overflow:hidden}
   .card::before{content:"";display:block;padding-top:140%}
   .card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .card-name{font-size:12px;text-align:center;margin-top:4px;font-weight:600}
+  .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 6px;font-size:10px;font-weight:700;
+    background:#ece6ff;margin-top:2px}
+  .pill.pos{color:var(--pos)}
+  .pill.neg{color:var(--neg)}
+  .pill.neu{color:var(--neu)}
 
-  /* 톤 표시(색+이모지) */
-  .tone-row{display:flex;align-items:center;gap:8px;margin:.5rem 0}
-  .dot{display:inline-block;width:12px;height:12px;border-radius:999px;vertical-align:-1px}
-  .pos{background:var(--pos)} .neg{background:var(--neg)} .neu{background:var(--neu)}
-
+  /* 요약 */
   .summary{background:#faf9ff;border-radius:14px;padding:12px 14px;margin-top:10px}
   .summary ul{padding-left:18px;margin:8px 0}
   .summary li{margin:4px 0}
+  .dot{display:inline-block;width:12px;height:12px;border-radius:999px;vertical-align:-1px;margin-right:6px}
+  .pos{background:var(--pos)} .neg{background:var(--neg)} .neu{background:var(--neu)}
 
-  /* 십자 스프레드 (겹침 방지/자동 축소) */
+  /* 십자 스프레드 */
   .cross-area{
-    position:relative;margin:12px auto;width:min(560px,92vw);height:min(90vh,122vw);
-    --crossw:120px;
+    position:relative;margin:12px auto;width:min(560px,92vw);height:min(90vh,122vw);--crossw:120px;
   }
-  .cross-card{position:absolute;width:var(--crossw);height:calc(var(--crossw)*1.4)}
+  .cross-card{position:absolute;width:var(--crossw);height:calc(var(--crossw)*1.4);display:flex;justify-content:center}
 
   /* 그랑타블로 */
   .gt-grid{
-    --gt-cols:9; display:grid; gap:6px; justify-items:center;
-    grid-template-columns:repeat(var(--gt-cols),1fr);
+    --gt-cols:9;display:grid;gap:6px;justify-items:center;grid-template-columns:repeat(var(--gt-cols),1fr);
   }
   .gt-grid .card-box{width:var(--gtw)}
+
+  /* 팝업(키카드 상세) */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:50}
+  .modal{background:#fff;border-radius:16px;padding:20px;max-width:380px;width:90%;box-shadow:var(--shadow);max-height:90vh;overflow:auto}
+  .modal img{width:100%;border-radius:12px;margin-bottom:10px}
+  .close{margin-top:8px;padding:6px 12px;border:none;border-radius:10px;background:#eee;font-weight:700;cursor:pointer}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>NAVI&amp;HUI LENORMAND</h1>
 
-  <!-- 버튼 + 질문칸 (복구된 구성/순서) -->
+<div class="wrap">
+  <h1>NAVI&HUI LENORMAND</h1>
+
   <div class="toolbar">
     <div class="row">
       <div class="ask">
@@ -85,8 +99,20 @@
   <div id="stage" class="stage"></div>
 </div>
 
+<!-- 팝업 -->
+<div id="popup" class="modal-bg hidden">
+  <div class="modal">
+    <img id="pm-img" src="">
+    <h3 id="pm-title" style="margin:0 0 6px;font-size:18px"></h3>
+    <p id="pm-key" style="font-size:14px;margin:4px 0"></p>
+    <p id="pm-add" style="font-size:14px;margin:4px 0"></p>
+    <p id="pm-tone" style="font-size:14px;margin:4px 0;font-weight:700"></p>
+    <button class="close" onclick="hidePopup()">닫기</button>
+  </div>
+</div>
+
 <script>
-/* ==================== 네가 준 CARDS로 교체 ==================== */
+/* ==================== 데이터 ==================== */
 const CARDS = [
   {num:1, code:"Rider", kr:"기수", key:"소식•이동", add:"빠른 변화·연락 도착", type:"positive"},
   {num:2, code:"Clover", kr:"클로버", key:"행운•기회", add:"짧은 찬스·시도 좋음", type:"positive"},
@@ -126,104 +152,133 @@ const CARDS = [
   {num:36, code:"Cross", kr:"십자가", key:"고난•신념", add:"책임·버티기", type:"negative"},
 ];
 
-/* ============ 이미지 경로 (기본 + 폴백) ============ */
+/* 이미지 경로 폴백 */
 function imgPath(num){
-  const nn = String(num).padStart(2,'0');
-  const name = `레노먼드-${nn}.png`;
+  const nn=String(num).padStart(2,'0');
+  const name=`레노먼드-${nn}.png`;
   return {primary:`images/${name}`, fallback:`img/lenormand/${name}`};
 }
-function imageTag(num, alt){
-  const p = imgPath(num);
-  return `<img src="${p.primary}" data-fallback="${p.fallback}" alt="${alt||''}">`;
+function imageTag(num,alt){
+  const p=imgPath(num);
+  return `<img src="${p.primary}" data-fallback="${p.fallback}" alt="${alt}">`;
 }
 function wireImgFallback(root){
-  (root||document).querySelectorAll('img[data-fallback]').forEach(img=>{
-    img.addEventListener('error', function onErr(){
+  root.querySelectorAll('img[data-fallback]').forEach(img=>{
+    img.addEventListener('error',function onErr(){
       if(this.dataset.fallback && this.src!==this.dataset.fallback){ this.src=this.dataset.fallback; }
-      else{ this.removeEventListener('error', onErr); }
+      else{ this.removeEventListener('error',onErr); }
     });
   });
 }
 
-/* ============ 유틸/공통 렌더 ============ */
-const stage = document.getElementById('stage');
-const askOn  = document.getElementById('askOn');
-const askTxt = document.getElementById('askText');
-
+/* 공통 */
+const stage=document.getElementById('stage');
+const askOn=document.getElementById('askOn');
+const askTxt=document.getElementById('askText');
 askOn.addEventListener('change',()=>{
   if(askOn.checked){ askTxt.classList.remove('hidden'); askTxt.focus(); }
   else{ askTxt.classList.add('hidden'); askTxt.value=''; }
 });
-
+function Qblock(){
+  const q=askOn.checked?askTxt.value.trim():'';
+  return q?`<div class="note" style="margin-bottom:8px"><b>질문:</b> ${q}</div>`:'';
+}
 function clearAll(){ stage.innerHTML=''; }
-function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} }
 function pick(n){ const arr=[...CARDS]; shuffle(arr); return arr.slice(0,n); }
 
-function toneKey(t){ return t==='positive'?'pos':(t==='negative'?'neg':'neu'); }
-function toneEmoji(t){ return t==='positive'?'🔵':(t==='negative'?'🔴':'🟢'); }
-function toneText(t){ return t==='positive'?'긍정':(t==='negative'?'부정':'중립'); }
+function toneKey(t){return t==='positive'?'pos':t==='negative'?'neg':'neu'}
+function toneEmoji(t){return t==='positive'?'🔵':t==='negative'?'🔴':'🟢'}
+function toneText(t){return t==='positive'?'긍정':t==='negative'?'부정':'중립'}
 
-function questionBlock(){
-  const q = askOn.checked ? askTxt.value.trim() : '';
-  return q ? `<div class="note" style="margin-bottom:8px"><b>질문:</b> ${q}</div>` : '';
-}
-
-function cardBox(card){
+function cardBox(c){
   return `
-    <div class="card-box">
-      <div class="card">${imageTag(card.num, `${card.num}. ${card.code}`)}</div>
-    </div>
-  `;
+  <div class="card-box" data-id="${c.num}">
+    <div class="card">${imageTag(c.num,c.code)}</div>
+    <div class="card-name">${c.num}. ${c.code}</div>
+    <div class="pill ${toneKey(c.type)}">${toneEmoji(c.type)} ${toneText(c.type)}</div>
+  </div>`;
 }
 
+/* 팝업 */
+const popup=document.getElementById('popup');
+const pmImg=document.getElementById('pm-img');
+const pmTitle=document.getElementById('pm-title');
+const pmKey=document.getElementById('pm-key');
+const pmAdd=document.getElementById('pm-add');
+const pmTone=document.getElementById('pm-tone');
+
+function showPopup(c){
+  const p=imgPath(c.num);
+  pmImg.src=p.primary;
+  pmImg.dataset.fallback=p.fallback;
+  pmTitle.textContent=`${c.num}. ${c.code} (${c.kr})`;
+  pmKey.textContent=`키워드: ${c.key}`;
+  pmAdd.textContent=`추가해석: ${c.add}`;
+  pmTone.textContent=`${toneEmoji(c.type)} ${toneText(c.type)}`;
+  popup.classList.remove('hidden');
+  wireImgFallback(document);
+}
+function hidePopup(){ popup.classList.add('hidden'); }
+
+/* 요약 */
 function renderSummary(cards){
   let p=0,n=0,u=0;
   cards.forEach(c=>{ if(c.type==='positive')p++; else if(c.type==='negative')n++; else u++; });
-  const badge = (p>n)?'positive':(n>p)?'negative':'neutral';
-  const box = document.createElement('div');
-  box.className = 'summary';
-  box.innerHTML = `
+  const badge=(p>n)?'positive':(n>p)?'negative':'neutral';
+  const wrap=document.createElement('div');wrap.className='summary';
+  wrap.innerHTML=`
     <div class="tone-row">
       <span class="dot ${toneKey(badge)}"></span>
       <b>${toneEmoji(badge)} ${toneText(badge)}</b>
       <span class="note"> (긍정 ${p} / 부정 ${n} / 중립 ${u})</span>
     </div>
-    <ul>
-      ${cards.map(c=>`<li><b>${c.num}. ${c.code} (${c.kr})</b> — ${c.key} · ${c.add}</li>`).join('')}
-    </ul>`;
-  stage.appendChild(box);
+    <ul>${cards.map(c=>`<li><b>${c.num}. ${c.code}</b> — ${c.key} · ${c.add}</li>`).join('')}</ul>`;
+  stage.appendChild(wrap);
 }
 
-/* ============ 스프레드 ============ */
+/* 카드 클릭 이벤트 (키카드 팝업) */
+function bindCardClick(root){
+  root.querySelectorAll('.card-box').forEach(box=>{
+    box.onclick=()=>{
+      const id=Number(box.dataset.id);
+      const c=CARDS.find(x=>x.num===id);
+      if(c) showPopup(c);
+    };
+  });
+}
+
+/* 1 / 3 / 5 */
 function r1(){
   clearAll();
-  const sel = pick(1);
-  const p = document.createElement('div'); p.className='panel';
-  p.innerHTML = `${questionBlock()}<div class="cards">${sel.map(cardBox).join('')}</div>`;
-  stage.appendChild(p); wireImgFallback(p); renderSummary(sel);
+  const sel=pick(1);
+  const p=document.createElement('div');p.className='panel';
+  p.innerHTML=`${Qblock()}<div class="cards">${sel.map(cardBox).join('')}</div>`;
+  stage.appendChild(p);wireImgFallback(p);bindCardClick(p);renderSummary(sel);
 }
 function r3(){
   clearAll();
-  const sel = pick(3);
-  const p = document.createElement('div'); p.className='panel';
-  p.innerHTML = `${questionBlock()}<div class="cards">${sel.map(cardBox).join('')}</div>`;
-  stage.appendChild(p); wireImgFallback(p); renderSummary(sel);
+  const sel=pick(3);
+  const p=document.createElement('div');p.className='panel';
+  p.innerHTML=`${Qblock()}<div class="cards">${sel.map(cardBox).join('')}</div>`;
+  stage.appendChild(p);wireImgFallback(p);bindCardClick(p);renderSummary(sel);
 }
 function r5(){
   clearAll();
-  const sel = pick(5);
-  const p = document.createElement('div'); p.className='panel';
-  p.innerHTML = `${questionBlock()}<div class="cards">${sel.map(cardBox).join('')}</div>`;
-  stage.appendChild(p); wireImgFallback(p); renderSummary(sel);
+  const sel=pick(5);
+  const p=document.createElement('div');p.className='panel';
+  p.innerHTML=`${Qblock()}<div class="cards">${sel.map(cardBox).join('')}</div>`;
+  stage.appendChild(p);wireImgFallback(p);bindCardClick(p);renderSummary(sel);
 }
 
-/* 십자: 중앙/좌/우/상/하 자동 축소 배치 */
+/* 십자 */
 function rCross(){
   clearAll();
-  const sel = pick(5);
-  const [center,left,right,top,bottom] = [sel[2], sel[0], sel[1], sel[3], sel[4]];
-  const wrap = document.createElement('div'); wrap.className='panel';
-  wrap.innerHTML = `${questionBlock()}
+  const sel=pick(5);
+  const [center,left,right,top,bottom]=[sel[2],sel[0],sel[1],sel[3],sel[4]];
+  const wrap=document.createElement('div');wrap.className='panel';
+  wrap.innerHTML=`
+    ${Qblock()}
     <div class="cross-area" id="cross">
       <div class="cross-card" id="C">${cardBox(center)}</div>
       <div class="cross-card" id="L">${cardBox(left)}</div>
@@ -232,25 +287,25 @@ function rCross(){
       <div class="cross-card" id="B">${cardBox(bottom)}</div>
     </div>`;
   stage.appendChild(wrap);
-  wireImgFallback(wrap);
+  wireImgFallback(wrap);bindCardClick(wrap);
 
   requestAnimationFrame(()=>{
     const area=document.getElementById('cross');
-    const w=area.clientWidth,h=area.clientHeight, gap=10, side=14, vpad=14;
-    const wBased=Math.floor((w-side*2-gap*2)/3);
-    const hBased=Math.floor((h-vpad*2-gap*2)/4.2);
+    const w=area.clientWidth,h=area.clientHeight,g=10,s=14,v=14;
+    const wBased=Math.floor((w-s*2-g*2)/3);
+    const hBased=Math.floor((h-v*2-g*2)/4.2);
     const cw=Math.max(60,Math.min(110,Math.min(wBased,hBased)));
     area.style.setProperty('--crossw',`${cw}px`);
     const ch=Math.floor(cw*1.4);
     const cx=Math.floor(w/2), cy=Math.floor(h/2);
     const pos=(id,x,y)=>{const el=document.getElementById(id);el.style.left=x+"px";el.style.top=y+"px";el.style.transform="translate(-50%,-50%)";}
-    pos("C",cx,cy); pos("L",cx-(cw+gap),cy); pos("R",cx+(cw+gap),cy); pos("T",cx,cy-(ch+gap)); pos("B",cx,cy+(ch+gap));
+    pos("C",cx,cy);pos("L",cx-(cw+g),cy);pos("R",cx+(cw+g),cy);pos("T",cx,cy-(ch+g));pos("B",cx,cy+(ch+g));
   });
 
   renderSummary([left,right,top,bottom,center]);
 }
 
-/* 그랑타블로 (9x4 / 8x4+4) */
+/* 그랑타블로 */
 function fitGT(wrap,grid,cols){
   const pad=20;
   const w=wrap.clientWidth-pad*2;
@@ -260,45 +315,64 @@ function fitGT(wrap,grid,cols){
 }
 function rGT(mode){
   clearAll();
-  const is8 = (mode==="8x4+4" || mode==="8x4e");
-  const cols = is8 ? 8 : 9;
-  const total = is8 ? 32 : 36;
+  const is8=(mode==="8x4+4");
+  const cols=is8?8:9;
+  const total=is8?32:36;
 
-  const pool=[...CARDS]; shuffle(pool);
+  const pool=[...CARDS];shuffle(pool);
   const main=pool.slice(0,total);
-  const ess = is8 ? pool.slice(32) : [];
+  const ess=is8?pool.slice(32):[];
 
-  const wrap=document.createElement('div'); wrap.className='panel'; wrap.id='gtW';
-  const grid=document.createElement('div'); grid.className='gt-grid'; grid.style.setProperty('--gt-cols',cols);
-  grid.innerHTML = main.map(c=>cardBox(c)).join('');
-  wrap.innerHTML = `${questionBlock()}`;
+  const wrap=document.createElement('div');wrap.className='panel';wrap.id='gtW';
+  wrap.innerHTML=`${Qblock()}`;
+
+  const grid=document.createElement('div');grid.className='gt-grid';grid.style.setProperty('--gt-cols',cols);
+  grid.innerHTML=main.map(cardBox).join('');
   wrap.appendChild(grid);
 
+  /* 행별 표시: 번호 + 영어 코드 */
+  const rows=Math.ceil(total/cols);
+  const rowBox=document.createElement('div');rowBox.className='summary';
+  rowBox.innerHTML=`<b>행별 카드</b><ul>
+    ${Array.from({length:rows}).map((_,r)=>{
+      const slice=main.slice(r*cols,r*cols+cols);
+      return `<li>${slice.map(c=>`${c.num}. ${c.code}`).join(" · ")}</li>`;
+    }).join('')}
+  </ul>`;
+  wrap.appendChild(rowBox);
+
+  /* 에센스 카드: 이미지 + 톤 + 번호·영문 */
   if(is8){
-    const essBox=document.createElement('div'); essBox.className='summary'; 
-    essBox.innerHTML = `<b>에센스 4장</b> — ${ess.map(c=>`${c.num}. ${c.code}`).join(' · ')}`;
+    const essBox=document.createElement('div');essBox.className='summary';
+    essBox.innerHTML=`<b>에센스 4장</b><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;justify-content:center">
+      ${ess.map(c=>`
+        <div style="width:70px;">
+          <div class="card">${imageTag(c.num,c.code)}</div>
+          <div class="card-name">${c.num}. ${c.code}</div>
+          <div class="pill ${toneKey(c.type)}">${toneEmoji(c.type)} ${toneText(c.type)}</div>
+        </div>`).join('')}
+    </div>`;
     wrap.appendChild(essBox);
   }
 
   stage.appendChild(wrap);
-  wireImgFallback(wrap);
+  wireImgFallback(wrap);bindCardClick(wrap);
 
   requestAnimationFrame(()=>{
     fitGT(wrap,grid,cols);
     const onR=()=>fitGT(wrap,grid,cols);
-    if(!grid._bind){ window.addEventListener('resize',onR); grid._bind=true; }
+    if(!grid._bind){window.addEventListener('resize',onR);grid._bind=true;}
   });
 }
 
-/* 버튼 바인딩 (순서 유지) */
-document.getElementById('b1').onclick = r1;
-document.getElementById('b3').onclick = r3;
-document.getElementById('b5').onclick = r5;
-document.getElementById('bc').onclick = rCross;
-document.getElementById('b94').onclick = ()=>rGT("9x4");
-document.getElementById('b84').onclick = ()=>rGT("8x4+4");
-
-/* 초기 자동 실행 없음 */
+/* 버튼 연결 */
+document.getElementById('b1').onclick=r1;
+document.getElementById('b3').onclick=r3;
+document.getElementById('b5').onclick=r5;
+document.getElementById('bc').onclick=rCross;
+document.getElementById('b94').onclick=()=>rGT("9x4");
+document.getElementById('b84').onclick=()=>rGT("8x4+4");
 </script>
+
 </body>
 </html>
