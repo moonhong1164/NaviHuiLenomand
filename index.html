@@ -47,20 +47,18 @@
   .grand9x4{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:8px}
   .grand8x4{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
   .grand9x4 .card,.grand8x4 .card{width:100% !important;max-width:none}
-  /* ✅ 그랑타블로에서는 캡션 숨김(이미지만) */
   .grand9x4 .caption,.grand8x4 .caption{display:none !important}
 
   /* 에센스 4장 */
   .essenceRow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}
   .essenceRow .card{width:100% !important;max-width:none}
 
-  /* 박스/텍스트 */
   .box{margin-top:14px;padding:12px;border:1px dashed #d7cfff;border-radius:12px;background:#fbf9ff}
   .muted{opacity:.7}
   .small{font-size:12px;line-height:1.35}
   .list{margin:6px 0 0 0;padding-left:18px}
 
-  /* 📱 일반 모바일 대응(기존 규칙 유지) */
+  /* 기본 모바일 대응(기존 유지) */
   @media (max-width:768px){
     .fiveGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
     .fiveGrid .card{max-width:140px}
@@ -71,24 +69,30 @@
     .cross .card{max-width:120px}
   }
 
-  /* === 5카드: 모바일에서 가로 1줄로 맞춤(Fold 포함) === */
+  /* === 5카드: 모바일에서 가로 1줄로 확실히 맞춤(Fold 포함) === */
   @media (max-width: 820px){
     .fiveGrid.spread-5{
       display:flex !important;
       flex-wrap:nowrap !important;
-      gap:8px !important;
-      padding:0 12px !important;
-      grid-template-columns:none !important; /* grid 비활성화 */
-      overflow-x:hidden !important;          /* 스크롤 숨김 */
+      gap:6px !important;              /* 간격 축소 */
+      padding:0 8px !important;         /* 좌우 패딩 축소 */
+      grid-template-columns:none !important;
+      overflow-x:hidden !important;
       justify-content:space-between;
     }
     .fiveGrid.spread-5 > *{
-      flex:0 0 calc((100vw - 24px - 32px)/5) !important; /* 좌우 패딩 24, 간격 8*4 */
+      /* (뷰포트 - 좌우패딩 16px - 간격 6px*4) / 5 */
+      flex:0 0 calc((100vw - 16px - 24px)/5) !important;
       max-width:none !important;
+      min-width:0 !important;
     }
     .fiveGrid.spread-5 .card{
       width:100% !important;
       aspect-ratio:5/7;
+    }
+    .fiveGrid.spread-5 .caption{
+      word-break:keep-all;
+      overflow-wrap:anywhere;  /* 긴 단어도 줄바꿈 */
     }
   }
 </style>
@@ -114,7 +118,7 @@
 </div>
 
 <script>
-/* ===== 카드 데이터 (사용자가 준 버전) ===== */
+/* ===== 카드 데이터 ===== */
 const CARDS = [
   {num:1, code:"Rider", kr:"기수", key:"소식•이동", add:"빠른 변화·연락 도착", type:"neutral"},
   {num:2, code:"Clover", kr:"클로버", key:"행운•기회", add:"짧은 찬스·시도 좋음", type:"negative"},
@@ -207,7 +211,7 @@ function drawN(n,btn){
   if(n===5){
     const grid=document.createElement('div');
     grid.className='fiveGrid';
-    grid.classList.add('spread-5'); /* ← 모바일 한 줄 레이아웃 */
+    grid.classList.add('spread-5'); /* 모바일 한 줄 레이아웃 */
     pick.forEach(c=>grid.appendChild(tile(c)));
     stage.appendChild(grid);
     const s=summarize(pick);
@@ -237,7 +241,7 @@ function drawGrand(kind,btn){
 
   if(kind==='9x4'){
     const grid=document.createElement('div'); grid.className='grand9x4'; grid.id='grand';
-    arr.forEach((c,i)=> grid.appendChild(tile(c,()=>showKey(i,arr,'9x4'),false))); // ✅ 캡션 숨김
+    arr.forEach((c,i)=> grid.appendChild(tile(c,()=>showKey(i,arr,'9x4'),false)));
     stage.appendChild(grid);
     stage.insertAdjacentHTML('beforeend', rowsColumnsSummary(arr,9,4));
     const box=document.createElement('div'); box.className='box'; box.id='detail';
@@ -246,7 +250,7 @@ function drawGrand(kind,btn){
   }else{
     const grid=document.createElement('div'); grid.className='grand8x4'; grid.id='grand84';
     const first32=arr.slice(0,32), essence=arr.slice(32);
-    first32.forEach((c,i)=> grid.appendChild(tile(c,()=>showKey(i,first32,'8x4'),false))); // ✅ 캡션 숨김
+    first32.forEach((c,i)=> grid.appendChild(tile(c,()=>showKey(i,first32,'8x4'),false)));
     stage.appendChild(grid);
     stage.insertAdjacentHTML('beforeend', rowsColumnsSummary(first32,8,4));
 
@@ -305,9 +309,7 @@ function summarize(cards){
   else if(top==='positive'){interp='경고 신호가 뚜렷합니다. 단절/지연/소모 이슈에 대비가 필요합니다.';advice='무리한 확장은 피하고 리스크 관리·정리·보수적 선택을 우선하세요.'}
   else{interp='상황이 엇갈립니다. 서두르기보다 정보 확인이 우선입니다.';advice='옵션을 비교·검증한 뒤 작게 시작하거나 유보하는 전략이 유리합니다.'}
   return {toneBadge:toneBadgeHtml,interp,advice};
-} /* ← 누락되었던 닫는 중괄호 복구 */
-
-/* (선택) 자동 태깅용 MO는 제거 — 직접 spread-5 부착으로 충분 */
+}
 </script>
 </body>
 </html>
