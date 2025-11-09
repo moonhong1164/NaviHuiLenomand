@@ -38,20 +38,47 @@
   justify-items:center;}
 .fiveGrid .card{width:100%;max-width:150px}
 
-/* 📱모바일: 가로 일렬 스크롤 */
+/* ===== 5카드: 모바일에서 한 화면에 5장 모두 보이기 ===== */
 @media (max-width: 768px){
+  /* 바깥 여백과 간격을 변수로 관리 */
+  :root{
+    --five-side: 12px;   /* 좌우 패딩 */
+    --five-gap:  8px;    /* 카드 사이 간격 */
+  }
+
+  /* 5카드 영역: 5등분 그리드 */
   .fiveGrid{
-    display:flex;
-    flex-wrap:nowrap;
-    overflow-x:auto;
-    -webkit-overflow-scrolling: touch;
-    gap:12px;
-    padding: 4px 8px 10px;  /* 아래 살짝 여백 */}
-  .fiveGrid .item{min-width:140px; flex: 0 0 auto;}
-  .fiveGrid .card{max-width:140px; width:140px}
-  /* 필요시 스크롤바 최소화 */
-  .fiveGrid::-webkit-scrollbar{height:6px}
-  .fiveGrid::-webkit-scrollbar-thumb{background:#d8d1f2;border-radius:999px}
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--five-gap);
+    padding: 6px var(--five-side) 0;
+    overflow: visible;           /* 스크롤 제거 */
+  }
+
+  /* 각 카드 아이템 폭을 뷰포트에 맞춰 계산
+     (뷰포트폭 - 좌우패딩*2 - 간격*4) / 5  */
+  .fiveGrid .item{
+    width: calc(
+      (100vw - (var(--five-side) * 2) - (var(--five-gap) * 4)) / 5
+    );
+    min-width: 0;                /* 축소 허용 */
+    justify-self: center;
+  }
+
+  /* 카드 자체를 아이템 폭에 맞춤 */
+  .fiveGrid .card{
+    width: 100%;
+    max-width: none;
+    aspect-ratio: 5 / 7;         /* 비율 유지(없으면 삭제해도 OK) */
+  }
+
+  /* 카드 아래 텍스트가 길어도 줄바꿈되도록 */
+  .fiveGrid .meta{
+    font-size: 12px;
+    line-height: 1.2;
+    word-break: keep-all;
+    text-align: center;
+  }
 }
   /* 십자 */
   .cross{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:640px;margin:0 auto}
