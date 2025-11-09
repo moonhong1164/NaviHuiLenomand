@@ -234,8 +234,6 @@ function rowsColumnsSummary(arr, cols, rows){
   let html=`<div class="box small"><b>그랑타블로 카드 순서</b>`;
   html+=`<div class="small"><u>행(위→아래)</u><ol class="list">`;
   for(let r=0;r<rows;r++){const slice=arr.slice(r*cols,r*cols+cols); html+=`<li>${slice.map(c=>`${c.num}. ${c.code}`).join(' · ')}</li>`}
-  html+=`</ol></div><div class="small"><u>열(왼→오)</u><ol class="list">`;
-  for(let c=0;c<cols;c++){const col=[]; for(let r=0;r<rows;r++){const i=r*cols+c; if(arr[i]) col.push(arr[i]);} html+=`<li>${col.map(x=>`${x.num}. ${x.code}`).join(' · ')}</li>`}
   html+=`</ol></div></div>`; return html;
 }
 
