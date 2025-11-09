@@ -6,47 +6,46 @@
 <title>NAVI&HUI LENORMAND</title>
 <style>
 :root{
-  --bg:#efe7ff; --panel:#f7f3ff; --card:#ffffff; --ink:#2a2240; --muted:#6c6290;
-  --ring:#d6c9ff; --shadow:0 10px 28px rgba(84,64,140,.18);
-  --gap:8px; --card-w:210px;
+  --bg:#efe7ff; --panel:#f7f3ff; --card:#fff; --ink:#2a2240; --muted:#6c6290; --ring:#d6c9ff;
+  --gap:10px; --card-w:210px; --shadow:0 10px 26px rgba(84,64,140,.18);
+  --pos:#22a531; --neg:#e53935; --neu:#2a64ff;
 }
 *{box-sizing:border-box} html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,Segoe UI,Apple SD Gothic Neo,Pretendard,sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,Pretendard,Apple SD Gothic Neo,Segoe UI,sans-serif}
 header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#efe7ffcc,#efe7ff80 80%,transparent);backdrop-filter:blur(6px)}
 .container{max-width:1100px;margin:0 auto;padding:14px 16px}
-h1{margin:4px 0 10px;font-size:28px;letter-spacing:.3px}
+h1{margin:4px 0 10px;font-size:28px}
 
-/* controls */
 .controls{display:flex;flex-wrap:wrap;gap:10px;padding:14px;border:1px solid var(--ring);background:var(--panel);border-radius:16px;box-shadow:var(--shadow)}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid var(--ring);background:#fff;border-radius:12px;cursor:pointer}
 .badge{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;background:#fff;border:1px solid var(--ring);color:var(--muted);font-size:13px}
 input[type="search"]{padding:10px 12px;border:1px solid var(--ring);border-radius:12px;background:#fff}
 
-/* result cards */
 .stage{margin:14px 0}
-.draw-result{display:grid;gap:12px}
-.card-mini{width:var(--card-w);background:var(--card);border:1px solid var(--ring);border-radius:16px;box-shadow:var(--shadow);padding:10px}
+.draw-result{display:grid;gap:12px;justify-content:center}
+.card-mini{width:var(--card-w);background:var(--card);border:2px solid var(--ring);border-radius:16px;box-shadow:var(--shadow);padding:10px;position:relative}
 .card-mini .img{width:100%;aspect-ratio:3/4;border-radius:12px;background:#e8defc;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .card-mini .img img{width:100%;height:100%;object-fit:contain;display:block}
 .card-mini h4{margin:8px 6px 6px;font-size:18px}
 .card-mini p{margin:6px}
-
-/* chips & tone */
+.pin{position:absolute;right:10px;top:10px;width:18px;height:18px;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.card-mini[data-tone="positive"]{border-color:var(--pos)} .card-mini[data-tone="positive"] .pin{background:var(--pos)}
+.card-mini[data-tone="negative"]{border-color:var(--neg)} .card-mini[data-tone="negative"] .pin{background:var(--neg)}
+.card-mini[data-tone="neutral"]{border-color:var(--neu)}  .card-mini[data-tone="neutral"]  .pin{background:var(--neu)}
 .row{display:flex;gap:6px;flex-wrap:wrap}
 .chip{font-size:12px;color:var(--muted);padding:2px 8px;border-radius:999px;background:#faf8ff;border:1px solid var(--ring)}
-.tone{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:#fff;border:1px solid var(--ring);box-shadow:var(--shadow);color:#493d71}
-.t-pos{color:#0a47ff} .t-neg{color:#d10a0a} .t-neu{color:#0a8a3a}
+.tone{display:inline-flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid var(--ring);box-shadow:var(--shadow);color:#493d71}
 
-/* fixed layouts */
-.draw-5{grid-template-columns:repeat(5,var(--card-w));justify-content:center}
+/* 5카드 가로 고정 */
+.draw-5{grid-template-columns:repeat(5,var(--card-w))}
 
-/* Cross */
+/* 십자 */
 .cross-wrap{border:1px solid var(--ring);border-radius:16px;background:var(--panel);padding:10px;box-shadow:var(--shadow)}
 .cross-box{position:relative;width:100%;overflow:hidden}
 .cross-stage{display:inline-block;transform-origin:top left}
 .cross-grid{display:grid;grid-template-columns:repeat(3,var(--card-w));grid-auto-rows:auto;gap:var(--gap);width:max-content}
 
-/* Grand Tableau */
+/* 그랑따블로 */
 .gt-wrap{border:1px solid var(--ring);border-radius:16px;background:var(--panel);padding:10px;box-shadow:var(--shadow)}
 .gt-toolbar{margin:6px 2px 10px;color:var(--muted)}
 .gt-scroll{position:relative;width:100%;overflow:hidden;-webkit-overflow-scrolling:touch}
@@ -55,7 +54,7 @@ input[type="search"]{padding:10px 12px;border:1px solid var(--ring);border-radiu
 .gt-card{width:var(--card-w)}
 .sidepanel{margin-top:10px;padding:10px 12px;border-radius:12px;background:#fff;border:1px solid var(--ring);box-shadow:var(--shadow);color:#493d71}
 
-/* gallery */
+/* 갤러리 */
 .gallery-toggle{margin:14px 0 6px}
 .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
 .gcard{background:#fff;border:1px solid var(--ring);border-radius:16px;box-shadow:var(--shadow);padding:10px}
@@ -63,6 +62,16 @@ input[type="search"]{padding:10px 12px;border:1px solid var(--ring);border-radiu
 .gcard .img img{width:100%;height:100%;object-fit:contain}
 
 footer{padding:28px 16px;color:#8a7fb0;text-align:center}
+
+/* 모바일에서 자동 축소를 도와줄 카드 기본 폭 축소 */
+@media (max-width:768px){
+  :root{ --card-w:180px }
+  .card-mini h4{font-size:16px}
+  .card-mini p{font-size:14px}
+}
+@media (max-width:430px){
+  :root{ --card-w:160px }
+}
 </style>
 </head>
 <body>
@@ -80,7 +89,7 @@ footer{padding:28px 16px;color:#8a7fb0;text-align:center}
     <button class="btn" id="btn8x4p4">🧩 8×4+4</button>
   </section>
 
-  <section id="questionBox" class="tone t-neu" style="display:none;margin-top:10px;">질문:</section>
+  <section id="questionBox" class="tone" style="display:none;margin-top:10px"></section>
 
   <section class="stage">
     <div id="draw" class="draw-result"></div>
@@ -97,7 +106,7 @@ footer{padding:28px 16px;color:#8a7fb0;text-align:center}
 <footer>© NAVI & HUI</footer>
 
 <script>
-/* ===== 데이터: 원래 매핑으로 복구 ===== */
+/* ===== 데이터(긍/부/중립 원래 매핑) ===== */
 const CARDS = [
   {n:1,  code:'Rider',    kr:'기수',   key:'소식·도착·빠른 진행', type:'positive'},
   {n:2,  code:'Clover',   kr:'클로버', key:'기회·행운·짧은 호재', type:'positive'},
@@ -133,12 +142,13 @@ const CARDS = [
   {n:32, code:'Moon',     kr:'달',     key:'감정·명예·인정',       type:'neutral'},
   {n:33, code:'Key',      kr:'열쇠',   key:'해결·정답·돌파',       type:'positive'},
   {n:34, code:'Fish',     kr:'물고기', key:'자원·거래·흐름',       type:'positive'},
-  {n:35, code:'Anchor',   kr:'닻',     key:'안정·고정·장기',       type:'neutral'},
+  {n:35, code:'Anchor',   kr:'닻',     key:'안정·고정·지속성',     type:'neutral'},
   {n:36, code:'Cross',    kr:'십자가', key:'무게·시험·책임',       type:'negative'},
 ];
 const byNum=new Map(CARDS.map(c=>[c.n,c]));
 const src = n => `images/레노먼드-${String(n).padStart(2,'0')}.png`;
 
+/* 공통 요소 */
 const drawArea = document.getElementById('draw');
 const sumBox   = document.getElementById('summary');
 const qToggle  = document.getElementById('qToggle');
@@ -147,57 +157,77 @@ const qBox     = document.getElementById('questionBox');
 
 qToggle.addEventListener('change',()=>{ qInput.style.display=qToggle.checked?'inline-block':'none'; if(!qToggle.checked) qInput.value=''; });
 
-function toneChip(t){return t==='positive'?'<span class="t-pos">🔵 긍정</span>':t==='negative'?'<span class="t-neg">🔴 부정</span>':'<span class="t-neu">🟢 중립</span>'}
-function mini(c){return `<article class="card-mini">
-  <div class="row"><span class="chip">${c.n}</span><span class="chip">${c.code}</span>${toneChip(c.type)}</div>
-  <div class="img"><img src="${src(c.n)}" alt="${c.n}. ${c.code}"></div>
-  <h4>${c.n}. ${c.code} (${c.kr})</h4><p>${c.key}</p></article>`}
+function mini(c){
+  return `<article class="card-mini" data-tone="${c.type}">
+    <span class="pin" aria-hidden="true"></span>
+    <div class="row"><span class="chip">${c.n}</span><span class="chip">${c.code}</span></div>
+    <div class="img"><img src="${src(c.n)}" alt="${c.n}. ${c.code}"></div>
+    <h4>${c.n}. ${c.code} (${c.kr})</h4><p>${c.key}</p>
+  </article>`;
+}
 function pick(n){const nums=[...Array(36).keys()].map(i=>i+1), out=[];while(out.length<n) out.push(nums.splice(Math.random()*nums.length|0,1)[0]);return out.map(x=>byNum.get(x))}
 function showQuestion(){if(qToggle.checked&&qInput.value.trim()){qBox.style.display='inline-flex';qBox.innerHTML=`<strong>질문:</strong> ${qInput.value.trim()}`;}else{qBox.style.display='none';qBox.textContent='';}}
+function jumpToResult(){drawArea.scrollIntoView({block:'start',behavior:'instant'});} // 결과가 항상 화면 맨 위에 오게
 
 /* 1/3/5 */
-document.getElementById('btn1').onclick=()=>{const cs=pick(1);drawArea.className='draw-result';drawArea.innerHTML=cs.map(mini).join('');showQuestion();sumBox.style.display='none';}
-document.getElementById('btn3').onclick=()=>{const cs=pick(3);drawArea.className='draw-result';drawArea.style.justifyContent='center';drawArea.innerHTML=cs.map(mini).join('');showQuestion();sumBox.style.display='none';}
-document.getElementById('btn5').onclick=()=>{const cs=pick(5);drawArea.className='draw-result draw-5';drawArea.innerHTML=cs.map(mini).join('');showQuestion();fiveSummary(cs);}
-/* 5카드 총평 */
-function fiveSummary(cs){const pos=cs.filter(c=>c.type==='positive').length,neg=cs.filter(c=>c.type==='negative').length,neu=cs.length-pos-neg;let tone='🟢 균형';if(pos>neg)tone='🔵 우호적';else if(neg>pos)tone='🔴 신중';const bullets=[];if(cs.some(c=>[33,31,9].includes(c.n)))bullets.push('결과 가시화·해결의 실마리');if(cs.some(c=>[25,27].includes(c.n)))bullets.push('계약/문서·공적 영역 체크');if(cs.some(c=>[21,10,8,7,6].includes(c.n)))bullets.push('리스크 관리·일정 조정');sumBox.style.display='inline-flex';sumBox.className='tone';sumBox.innerHTML=`<strong>전체 톤:</strong> ${tone} &nbsp; (긍정 ${pos} / 부정 ${neg} / 중립 ${neu})<br>• ${bullets.join('<br>• ')||'핵심 포인트를 상황에 맞게 점검하세요.'}`}
+document.getElementById('btn1').onclick=()=>{const cs=pick(1);drawArea.className='draw-result';drawArea.innerHTML=cs.map(mini).join('');showQuestion();sumBox.style.display='none';jumpToResult();}
+document.getElementById('btn3').onclick=()=>{const cs=pick(3);drawArea.className='draw-result';drawArea.innerHTML=cs.map(mini).join('');showQuestion();sumBox.style.display='none';jumpToResult();}
+document.getElementById('btn5').onclick=()=>{const cs=pick(5);drawArea.className='draw-result draw-5';drawArea.innerHTML=cs.map(mini).join('');showQuestion();fiveSummary(cs);jumpToResult();}
 
-/* 십자 (자동 축소) */
-document.getElementById('btnCross').onclick=()=>{const [center,left,right,top,bottom]=pick(5);drawArea.className='draw-result';drawArea.innerHTML=`
-<div class="cross-wrap"><div class="cross-box" id="crossScroll"><div class="cross-stage" id="crossStage">
-  <div class="cross-grid" id="crossGrid">
-    <div></div><div>${mini(top)}</div><div></div>
-    <div>${mini(left)}</div><div>${mini(center)}</div><div>${mini(right)}</div>
-    <div></div><div>${mini(bottom)}</div><div></div>
-  </div></div></div></div>`;showQuestion();sumBox.style.display='none';
-  forceFitGrid(document.getElementById('crossScroll'),document.getElementById('crossStage'));
+/* 5카드 총평 */
+function fiveSummary(cs){
+  const pos=cs.filter(c=>c.type==='positive').length,neg=cs.filter(c=>c.type==='negative').length,neu=cs.length-pos-neg;
+  let tone='🟢 균형'; if(pos>neg)tone='🔵 우호적'; else if(neg>pos)tone='🔴 신중';
+  const bullets=[];
+  if(cs.some(c=>[33,31,9].includes(c.n)))bullets.push('결과 가시화·해결의 실마리');
+  if(cs.some(c=>[25,27].includes(c.n)))bullets.push('계약/문서·공적 영역 체크');
+  if(cs.some(c=>[21,10,8,7,6].includes(c.n)))bullets.push('리스크 관리·일정 조정');
+  sumBox.style.display='inline-flex';
+  sumBox.innerHTML=`<strong>전체 톤:</strong> ${tone} (긍정 ${pos} / 부정 ${neg} / 중립 ${neu})<br>• ${bullets.join('<br>• ')||'핵심 포인트를 상황에 맞게 점검하세요.'}`;
 }
 
-/* 그랑타블로 */
+/* 십자 — 자동 축소 */
+document.getElementById('btnCross').onclick=()=>{
+  const [center,left,right,top,bottom]=pick(5);
+  drawArea.className='draw-result';
+  drawArea.innerHTML=`<div class="cross-wrap">
+    <div class="cross-box" id="xScroll"><div class="cross-stage" id="xStage">
+      <div class="cross-grid" id="xGrid">
+        <div></div><div>${mini(top)}</div><div></div>
+        <div>${mini(left)}</div><div>${mini(center)}</div><div>${mini(right)}</div>
+        <div></div><div>${mini(bottom)}</div><div></div>
+      </div></div></div></div>`;
+  showQuestion(); sumBox.style.display='none'; jumpToResult();
+  forceFitGrid(document.getElementById('xScroll'), document.getElementById('xStage'));
+}
+
+/* 그랑따블로 */
 document.getElementById('btn9x4').onclick = ()=>grandTableau(9,4,false);
 document.getElementById('btn8x4p4').onclick = ()=>grandTableau(8,4,true);
 
 function grandTableau(cols, rows, essenceLast4){
   const order=pick(36).map(c=>c.n);
-  const head=`<div class="gt-toolbar">카드를 눌러 <strong>키 카드</strong>의 <u>주위 카드</u>와 <u>나이팅</u>을 확인하세요.</div>`;
+  const head=`<div class="gt-toolbar">카드를 눌러 <strong>키 카드</strong>의 주위/나이팅을 확인하세요.</div>`;
   const grid=`<div class="gt-scroll" id="gtScroll"><div class="gt-stage" id="gtStage">
     <div class="gt-grid" id="gtGrid" style="grid-template-columns:repeat(${cols},var(--card-w))">
-      ${order.slice(0,cols*rows).map((n,i)=>{const c=byNum.get(n);return `<div class="card-mini gt-card" data-idx="${i}" data-num="${c.n}">
-        <div class="row"><span class="chip">${c.n}</span><span class="chip">${c.code}</span>${toneChip(c.type)}</div>
+      ${order.slice(0,cols*rows).map((n,i)=>{const c=byNum.get(n);return `<div class="card-mini gt-card" data-idx="${i}" data-num="${c.n}" data-tone="${c.type}">
+        <span class="pin"></span>
+        <div class="row"><span class="chip">${c.n}</span><span class="chip">${c.code}</span></div>
         <div class="img"><img src="${src(c.n)}" alt=""></div>
         <h4>${c.n}. ${c.code} (${c.kr})</h4><p>${c.key}</p></div>`}).join('')}
     </div></div></div>`;
   const ess = essenceLast4 ? `<div class="gt-toolbar"><strong>에센스 4장</strong></div>
     <div class="gt-scroll" id="gtEssScroll"><div class="gt-stage" id="gtEssStage">
       <div class="gt-grid" style="grid-template-columns:repeat(4,var(--card-w))">
-        ${order.slice(cols*rows).map(n=>{const c=byNum.get(n);return `<div class="card-mini gt-card">
-          <div class="row"><span class="chip">${c.n}</span><span class="chip">${c.code}</span>${toneChip(c.type)}</div>
+        ${order.slice(cols*rows).map(n=>{const c=byNum.get(n);return `<div class="card-mini gt-card" data-tone="${c.type}">
+          <span class="pin"></span>
+          <div class="row"><span class="chip">${c.n}</span><span class="chip">${c.code}</span></div>
           <div class="img"><img src="${src(c.n)}" alt=""></div>
           <h4>${c.n}. ${c.code} (${c.kr})</h4><p>${c.key}</p></div>`}).join('')}
       </div></div></div>` : '';
   drawArea.className='draw-result';
   drawArea.innerHTML=`<div class="gt-wrap" id="gtWrap">${head}${grid}${ess}<div class="sidepanel" id="gtInfo">키 카드를 선택하면 해석이 여기에 표시됩니다.</div></div>`;
-  sumBox.style.display='none'; showQuestion();
+  sumBox.style.display='none'; showQuestion(); jumpToResult();
 
   const gridEl=document.getElementById('gtGrid');
   gridEl.querySelectorAll('.gt-card').forEach(el=>{
@@ -214,14 +244,17 @@ function grandTableau(cols, rows, essenceLast4){
     },{passive:true});
   });
 
-  // 모든 이미지 로드 후 강제 맞춤
+  // 모든 이미지 로드 후 고정 축소
   const wrap=document.getElementById('gtWrap');
-  Promise.all(Array.from(wrap.querySelectorAll('img')).map(img=>img.complete?true:new Promise(r=>{img.addEventListener('load',r,{once:true});img.addEventListener('error',r,{once:true});})))
-    .then(()=>{ requestAnimationFrame(()=>{forceFitGrid(document.getElementById('gtScroll'),document.getElementById('gtStage'));
+  const waitImgs = imgs => Promise.all(imgs.map(img=>img.complete?true:new Promise(r=>{img.addEventListener('load',r,{once:true});img.addEventListener('error',r,{once:true});})));
+  waitImgs(Array.from(wrap.querySelectorAll('img'))).then(()=>{
+    // 두 번 재확인(주소창 애니메이션 보정)
+    const fitAll=()=>{
+      forceFitGrid(document.getElementById('gtScroll'),document.getElementById('gtStage'));
       if(ess) forceFitGrid(document.getElementById('gtEssScroll'),document.getElementById('gtEssStage'));
-      requestAnimationFrame(()=>{forceFitGrid(document.getElementById('gtScroll'),document.getElementById('gtStage'));
-        if(ess) forceFitGrid(document.getElementById('gtEssScroll'),document.getElementById('gtEssStage'));});
-    });});
+    };
+    fitAll(); requestAnimationFrame(fitAll); setTimeout(fitAll,120);
+  });
 
   const onResize=()=>{forceFitGrid(document.getElementById('gtScroll'),document.getElementById('gtStage'));
                       if(ess) forceFitGrid(document.getElementById('gtEssScroll'),document.getElementById('gtEssStage'));};
@@ -229,41 +262,44 @@ function grandTableau(cols, rows, essenceLast4){
   window.visualViewport?.addEventListener('resize',onResize,{passive:true});
 }
 
-/* ===== 핵심: 모바일 한 화면 강제 맞춤 ===== */
+/* ===== 모바일 한 화면 강제 맞춤 (개선판) ===== */
 function forceFitGrid(scrollEl, stageEl){
   if(!scrollEl||!stageEl) return;
-  // 데스크톱은 스케일 해제
-  if(window.innerWidth>768){ stageEl.style.transform='none';
-    scrollEl.style.overflowX='auto'; scrollEl.style.overflowY='hidden'; scrollEl.style.height='';
-    return;
-  }
-  // 현재 스케일 제거 후 실제 크기 측정
+  const isMobile = window.innerWidth <= 768;
   stageEl.style.transform='none';
+  if(!isMobile){
+    scrollEl.style.overflow='auto'; scrollEl.style.height=''; return;
+  }
+  // 가용 영역 계산(주소창 포함/제외 모두 고려)
   const top = scrollEl.getBoundingClientRect().top;
-  const vh  = (window.visualViewport?.height || window.innerHeight);
-  const availW = scrollEl.clientWidth - 4;
-  const availH = Math.max(260, vh - top - 16);
-  // 실제 필요 크기
+  const vh1 = window.innerHeight, vh2 = (window.visualViewport?.height || vh1);
+  const availH = Math.max(240, Math.min(vh1, vh2) - top - 12);
+  const availW = scrollEl.clientWidth - 6;
+
   const needW = stageEl.scrollWidth;
   const needH = stageEl.scrollHeight;
-  // 스케일 계산 (여백 조금 확보)
-  const scale = Math.min(availW/needW, availH/needH, 0.98);
+
+  const scale = Math.min((availW-2)/needW, (availH-2)/needH, 1);
   stageEl.style.transform = `scale(${scale})`;
-  scrollEl.style.height = `${Math.ceil(needH*scale)+8}px`;
-  scrollEl.style.overflowX='hidden';  // 한 화면에 담기도록
-  scrollEl.style.overflowY='hidden';
+  scrollEl.style.height   = `${Math.ceil(needH*scale)+6}px`;
+  scrollEl.style.overflow = 'hidden';
   scrollEl.style.webkitOverflowScrolling='touch';
 }
 
-/* 전체 보기 */
+/* === 갤러리 === */
 const toggleAll=document.getElementById('toggleAll');
 const gallery=document.getElementById('gallery');
 const filter=document.getElementById('filter');
 toggleAll.onclick=()=>{const open=gallery.style.display!=='none';gallery.style.display=open?'none':'grid';if(!open) renderAll();}
 filter.oninput=()=>renderAll(filter.value.trim().toLowerCase());
-function renderAll(term=''){const list=CARDS.filter(c=>`${c.n} ${c.code} ${c.kr}`.toLowerCase().includes(term));gallery.innerHTML=list.map(c=>`
-  <article class="gcard"><div class="row"><span class="chip">${c.n}</span><span class="chip">${c.code}</span>${toneChip(c.type)}</div>
-  <div class="img"><img src="${src(c.n)}" alt=""></div><h4>${c.n}. ${c.code} (${c.kr})</h4><p>${c.key}</p></article>`).join('');}
+function renderAll(term=''){const list=CARDS.filter(c=>`${c.n} ${c.code} ${c.kr}`.toLowerCase().includes(term));
+  gallery.innerHTML=list.map(c=>`
+  <article class="gcard">
+    <div class="row"><span class="chip">${c.n}</span><span class="chip">${c.code}</span></div>
+    <div class="img"><img src="${src(c.n)}" alt=""></div>
+    <h4>${c.n}. ${c.code} (${c.kr})</h4><p>${c.key}</p>
+  </article>`).join('');
+}
 </script>
 </body>
 </html>
