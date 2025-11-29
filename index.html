@@ -140,35 +140,6 @@
   }
   .cross .card{width:100%;max-width:150px;}
 
-  /* 그랑타블로 */
-  .grand9x4{
-    display:grid;
-    grid-template-columns:repeat(9,minmax(0,1fr));
-    gap:8px;
-  }
-  .grand8x4{
-    display:grid;
-    grid-template-columns:repeat(8,minmax(0,1fr));
-    gap:8px;
-  }
-  .grand9x4 .card,
-  .grand8x4 .card{
-    width:100% !important;
-    max-width:none;
-  }
-  /* 그랑타블로는 캡션 숨김 */
-  .grand9x4 .caption,
-  .grand8x4 .caption{display:none !important;}
-
-  /* 8x4+4 에센스 4장 */
-  .essenceRow{
-    display:grid;
-    grid-template-columns:repeat(4,minmax(0,1fr));
-    gap:10px;
-    margin-top:12px;
-  }
-  .essenceRow .card{width:100% !important;max-width:none;}
-
   .box{
     margin-top:14px;
     padding:12px;
@@ -234,8 +205,7 @@
       <button class="btn" onclick="drawN(3,this)">3카드</button>
       <button class="btn" onclick="drawN(5,this)">5카드</button>
       <button class="btn" onclick="drawCross(this)">+ 십자</button>
-      <button class="btn" onclick="drawGrand('9x4',this)">9x4</button>
-      <button class="btn" onclick="drawGrand('8x4+4',this)">8x4+4</button>
+      <!-- ✅ 9x4, 8x4+4 버튼은 완전히 제거 -->
     </div>
 
     <div id="stage"></div>
@@ -429,125 +399,6 @@ function drawCross(btn){
   g.appendChild(makeTile(cs[4]));
   g.appendChild(document.createElement("div"));
   stage.appendChild(g);
-}
-
-/* 행/열 정보 요약 */
-function rowsColumnsSummary(arr, cols, rows){
-  let html = `<div class="box small"><b>그랑타블로 카드 순서</b>`;
-  html += `<div class="small"><u>행(위→아래)</u><ol class="list">`;
-  for(let r=0;r<rows;r++){
-    const slice = arr.slice(r*cols, r*cols+cols);
-    html += `<li>${slice.map(c=>`${c.num}. ${c.code}`).join(" · ")}</li>`;
-  }
-  html += `</ol></div></div>`;
-  return html;
-}
-
-/* 키카드 상세 */
-function showKey(idx,arr,mode){
-  const cols = (mode==="9x4"?9:8);
-  const rows = 4;
-  const r = Math.floor(idx/cols);
-  const c = idx % cols;
-  const inB = (rr,cc)=> rr>=0 && rr<rows && cc>=0 && cc<cols;
-
-  const around = [];
-  const knight = [];
-
-  [[0,-1],[0,1],[-1,0],[1,0]].forEach(([dr,dc])=>{
-    const rr=r+dr, cc=c+dc;
-    if(inB(rr,cc)) around.push(arr[rr*cols+cc]);
-  });
-  [[-1,-2],[-2,-1],[1,-2],[2,-1],[1,2],[2,1],[-1,2],[-2,1]].forEach(([dr,dc])=>{
-    const rr=r+dr, cc=c+dc;
-    if(inB(rr,cc)) knight.push(arr[rr*cols+cc]);
-  });
-
-  const key = arr[idx];
-  const box = document.getElementById("detail");
-  box.innerHTML =
-    `<div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">`+
-      `<div style="min-width:120px">`+
-        `<div id="keycard-slot"></div>`+
-        `<div class="caption" style="text-align:left">`+
-          `<b>${key.num}. ${key.code}</b><br>`+
-          `${toneBadge(key.type)}<br>`+
-          `${key.key}<br>`+
-          `<span class="muted">${key.add}</span>`+
-        `</div>`+
-      `</div>`+
-      `<div class="small">`+
-        `<b>주위 카드</b><br>${around.map(x=>`${x.num}. ${x.code}`).join(" · ") || "—"}`+
-        `<div style="height:8px"></div>`+
-        `<b>나이팅</b><br>${knight.map(x=>`${x.num}. ${x.code}`).join(" · ") || "—"}`+
-      `</div>`+
-    `</div>`;
-
-  const slot = document.getElementById("keycard-slot");
-  const node = makeTile(key,null,false);
-  slot.appendChild(node.firstChild);
-}
-
-/* 그랑타블로 */
-function drawGrand(kind,btn){
-  setOn(btn);
-  const arr = shuffle([...CARDS]);
-  stage.innerHTML = "";
-  stage.insertAdjacentHTML("beforeend", questionHTML());
-
-  if(kind === "9x4"){
-    const grid = document.createElement("div");
-    grid.className = "grand9x4";
-    arr.forEach((c,i)=>{
-      grid.appendChild(
-        makeTile(c, ()=>showKey(i,arr,"9x4"), false)
-      );
-    });
-    stage.appendChild(grid);
-    stage.insertAdjacentHTML("beforeend", rowsColumnsSummary(arr,9,4));
-
-    const box = document.createElement("div");
-    box.className = "box small";
-    box.id = "detail";
-    box.innerHTML =
-      "<b>키 카드를 누르면</b> 아래에 키 카드와 주위 카드·나이팅이 표시됩니다.";
-    stage.appendChild(box);
-
-  }else{ // 8x4+4
-    const grid = document.createElement("div");
-    grid.className = "grand8x4";
-
-    const first32 = arr.slice(0,32);
-    const essence = arr.slice(32); // 4장
-
-    first32.forEach((c,i)=>{
-      grid.appendChild(
-        makeTile(c, ()=>showKey(i,first32,"8x4"), false)
-      );
-    });
-    stage.appendChild(grid);
-    stage.insertAdjacentHTML("beforeend", rowsColumnsSummary(first32,8,4));
-
-    const es = document.createElement("div");
-    es.className = "essenceRow";
-    essence.forEach(c => es.appendChild(makeTile(c)));
-    stage.appendChild(es);
-
-    const s = summarize(essence);
-    stage.insertAdjacentHTML("beforeend",
-      `<div class="box small"><b>에센스 요약</b><br>`+
-      `전체 톤: ${s.toneTxt}<br>`+
-      `해석: ${s.interp}<br>`+
-      `권고: ${s.advice}</div>`
-    );
-
-    const box = document.createElement("div");
-    box.className = "box small";
-    box.id = "detail";
-    box.innerHTML =
-      "<b>키 카드를 누르면</b> 아래에 키 카드와 주위 카드·나이팅이 표시됩니다.";
-    stage.appendChild(box);
-  }
 }
 
 /* 🔐 아주 간단한 비밀번호 잠금 (눈가림용) */
