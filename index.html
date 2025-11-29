@@ -44,7 +44,7 @@
     justify-content:center;
   }
   .qbox{
-    flex:1 1 320px;
+    flex:1 1 260px;
     display:flex;
     gap:8px;
     align-items:center;
@@ -56,6 +56,19 @@
     border:1px solid #ded6f8;
     border-radius:12px;
     background:#fff;
+  }
+  .center-opt{
+    display:flex;
+    align-items:center;
+    font-size:12px;
+    gap:4px;
+  }
+  .center-opt select{
+    padding:4px 6px;
+    border-radius:10px;
+    border:1px solid #ded6f8;
+    background:#fff;
+    font-size:12px;
   }
   .btn{
     border:0;
@@ -140,6 +153,16 @@
   }
   .cross .card{width:100%;max-width:150px;}
 
+  /* 3x3 9카드 */
+  .grid3x3{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+    max-width:640px;
+    margin:0 auto;
+    justify-items:center;
+  }
+
   .box{
     margin-top:14px;
     padding:12px;
@@ -157,7 +180,6 @@
     .card{width:100px;}
     .cross .card{max-width:140px;}
 
-    /* 5카드: 한 화면에 다 들어오도록 축소 */
     .spread-5 .card{
       width:17vw;
       max-width:none;
@@ -200,12 +222,22 @@
         <label><input id="useQ" type="checkbox" /> 질문 입력</label>
         <input id="qtext" type="text" placeholder="질문을 적어 주세요" />
       </div>
+
+      <!-- 중앙 카드 선택 -->
+      <div class="center-opt">
+        <span>중앙카드</span>
+        <select id="center-select">
+          <option value="">랜덤</option>
+          <!-- JS에서 카드 목록으로 자동 채워짐 -->
+        </select>
+      </div>
+
       <button class="btn" onclick="drawN(1,this)">1카드</button>
       <button class="btn" onclick="drawN(2,this)">2카드</button>
       <button class="btn" onclick="drawN(3,this)">3카드</button>
       <button class="btn" onclick="drawN(5,this)">5카드</button>
       <button class="btn" onclick="drawCross(this)">+ 십자</button>
-      <!-- ✅ 9x4, 8x4+4 버튼은 완전히 제거 -->
+      <button class="btn" onclick="draw3x3(this)">9카드(3x3)</button>
     </div>
 
     <div id="stage"></div>
@@ -213,7 +245,7 @@
 </div>
 
 <script>
-/* ===== 카드 데이터 (사용자가 준 버전) ===== */
+/* ===== 카드 데이터 ===== */
 const CARDS = [
   {num:1, code:"Rider",   kr:"기수",   key:"소식•이동",   add:"빠른 변화·연락 도착", type:"positive"},
   {num:2, code:"Clover",  kr:"클로버", key:"행운•기회",   add:"짧은 찬스·시도 좋음", type:"positive"},
@@ -252,6 +284,20 @@ const CARDS = [
   {num:35,code:"Anchor",  kr:"닻",     key:"안정•고정",   add:"지속성",           type:"neutral"},
   {num:36,code:"Cross",   kr:"십자가", key:"고난•신념",   add:"책임·버티기",       type:"negative"},
 ];
+
+/* 중앙 카드 선택 셀렉트 초기화 */
+function initCenterSelect(){
+  const sel = document.getElementById("center-select");
+  if(!sel) return;
+  CARDS.forEach(c=>{
+    const opt = document.createElement("option");
+    opt.value = String(c.num);
+    opt.textContent = `${c.num}. ${c.code}`;
+    sel.appendChild(opt);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initCenterSelect);
 
 /* 이미지 로딩 (레노먼드-01.png 등 자동 시도) */
 const IMG_DIR_CANDIDATES = ["","cards/","images/","img/"];
@@ -399,6 +445,58 @@ function drawCross(btn){
   g.appendChild(makeTile(cs[4]));
   g.appendChild(document.createElement("div"));
   stage.appendChild(g);
+}
+
+/* 3x3 9카드 스프레드 (중앙 카드 선택 가능) */
+function draw3x3(btn){
+  setOn(btn);
+  stage.innerHTML = "";
+  stage.insertAdjacentHTML("beforeend", questionHTML());
+
+  const sel = document.getElementById("center-select");
+  const chosenVal = sel ? sel.value : "";
+  const deck = [...CARDS];
+  let centerCard = null;
+  let others = [];
+
+  if(chosenVal){
+    const chosenNum = parseInt(chosenVal,10);
+    const idx = deck.findIndex(c => c.num === chosenNum);
+    if(idx !== -1){
+      centerCard = deck.splice(idx,1)[0]; // 선택한 카드를 덱에서 제거
+    }
+    const shuffled = shuffle(deck);
+    others = shuffled.slice(0,8); // 나머지 8장
+  }else{
+    const shuffled = shuffle(deck);
+    const nine = shuffled.slice(0,9);
+    centerCard = nine[4];               // 가운데 카드 하나 선택
+    others = nine.filter((_,i)=>i!==4);  // 나머지 8장
+  }
+
+  // 3x3 배열 만들기 (인덱스 4가 중앙)
+  const order = [];
+  let oi = 0;
+  for(let i=0;i<9;i++){
+    if(i === 4){
+      order.push(centerCard);
+    }else{
+      order.push(others[oi++]);
+    }
+  }
+
+  const grid = document.createElement("div");
+  grid.className = "grid3x3";
+  order.forEach(c => grid.appendChild(makeTile(c)));
+  stage.appendChild(grid);
+
+  const sum = summarize(order);
+  stage.insertAdjacentHTML("beforeend",
+    `<div class="box small"><b>9카드(3x3) 요약</b><br>`+
+    `전체 톤: ${sum.toneTxt}<br>`+
+    `해석: ${sum.interp}<br>`+
+    `권고: ${sum.advice}</div>`
+  );
 }
 
 /* 🔐 아주 간단한 비밀번호 잠금 (눈가림용) */
