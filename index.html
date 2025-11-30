@@ -238,6 +238,8 @@
       <button class="btn" onclick="drawN(5,this)">5카드</button>
       <button class="btn" onclick="drawCross(this)">+ 십자</button>
       <button class="btn" onclick="draw3x3(this)">9카드(3x3)</button>
+      <!-- 🔄 초기화 버튼 추가 -->
+      <button class="btn" onclick="resetAll()">초기화</button>
     </div>
 
     <div id="stage"></div>
@@ -245,6 +247,11 @@
 </div>
 
 <script>
+/* 🖱 오른쪽 클릭(컨텍스트 메뉴) 방지 */
+document.addEventListener("contextmenu", function(e){
+  e.preventDefault();
+});
+
 /* ===== 카드 데이터 ===== */
 const CARDS = [
   {num:1, code:"Rider",   kr:"기수",   key:"소식•이동",   add:"빠른 변화·연락 도착", type:"positive"},
@@ -497,6 +504,27 @@ function draw3x3(btn){
     `해석: ${sum.interp}<br>`+
     `권고: ${sum.advice}</div>`
   );
+}
+
+/* 🔄 초기화 기능 */
+function resetAll(){
+  // 버튼 on 상태 제거
+  setOn(null);
+
+  // 스테이지 비우기
+  if(stage){
+    stage.innerHTML = "";
+  }
+
+  // 질문 영역 리셋
+  const qInput = document.getElementById("qtext");
+  const qCheck = document.getElementById("useQ");
+  if(qInput) qInput.value = "";
+  if(qCheck) qCheck.checked = false;
+
+  // 중앙 카드 선택값 리셋
+  const sel = document.getElementById("center-select");
+  if(sel) sel.value = "";
 }
 
 /* 🔐 아주 간단한 비밀번호 잠금 (눈가림용) */
