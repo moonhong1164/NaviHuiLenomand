@@ -260,42 +260,42 @@ document.addEventListener("contextmenu", function(e){
 
 /* ===== 카드 데이터 ===== */
 const CARDS = [
-  {num:1, code:"Rider",   kr:"기수",   key:"소식•이동",   add:"빠른 변화·연락 도착", type:"positive"},
-  {num:2, code:"Clover",  kr:"클로버", key:"행운•기회",   add:"짧은 찬스·시도 좋음", type:"positive"},
+  {num:1, code:"Rider",   kr:"기수",   key:"소식•이동",   add:"빠른 변화·연락 도착", type:"neutral"},
+  {num:2, code:"Clover",  kr:"클로버", key:"행운•기회",   add:"짧은 찬스·시도 좋음", type:"negative"},
   {num:3, code:"Ship",    kr:"선박",   key:"여행•확장",   add:"관계·환경 변화",     type:"neutral"},
   {num:4, code:"House",   kr:"집",     key:"가정•안정",   add:"기반 다지기",       type:"neutral"},
-  {num:5, code:"Tree",    kr:"나무",   key:"건강•성장",   add:"장기 성장·회복",     type:"positive"},
-  {num:6, code:"Cloud",   kr:"구름",   key:"혼란•불확실", add:"판단 보류·챙기기",   type:"negative"},
-  {num:7, code:"Snake",   kr:"뱀",     key:"유혹•기만",   add:"겉과속 다름·주의",   type:"negative"},
-  {num:8, code:"Coffin",  kr:"관",     key:"끝•전환",     add:"정리·재출발",       type:"negative"},
-  {num:9, code:"Bouquet", kr:"부케",   key:"선물•기쁨",   add:"호의 상승",         type:"positive"},
-  {num:10,code:"Scythe",  kr:"낫",     key:"단절•결정",   add:"빠른 선택",         type:"negative"},
-  {num:11,code:"Whip",    kr:"채찍",   key:"갈등•반복",   add:"루프 끊기",         type:"negative"},
+  {num:5, code:"Tree",    kr:"나무",   key:"건강•성장",   add:"장기 성장·회복",     type:"neutral"},
+  {num:6, code:"Cloud",   kr:"구름",   key:"혼란•불확실", add:"판단 보류·챙기기",   type:"positive"},
+  {num:7, code:"Snake",   kr:"뱀",     key:"유혹•기만",   add:"겉과속 다름·주의",   type:"positive"},
+  {num:8, code:"Coffin",  kr:"관",     key:"끝•전환",     add:"정리·재출발",       type:"positive"},
+  {num:9, code:"Bouquet", kr:"부케",   key:"선물•기쁨",   add:"호의 상승",         type:"negative"},
+  {num:10,code:"Scythe",  kr:"낫",     key:"단절•결정",   add:"빠른 선택",         type:"positive"},
+  {num:11,code:"Whip",    kr:"채찍",   key:"갈등•반복",   add:"루프 끊기",         type:"positive"},
   {num:12,code:"Bird",    kr:"새",     key:"대화•소문",   add:"말 많은 시기",       type:"neutral"},
-  {num:13,code:"Child",   kr:"아이",   key:"새 시작•순수", add:"작지만 성장 큼",     type:"positive"},
+  {num:13,code:"Child",   kr:"아이",   key:"새 시작•순수", add:"작지만 성장 큼",     type:"negative"},
   {num:14,code:"Fox",     kr:"여우",   key:"일•의심",     add:"계약·정보 재확인",   type:"neutral"},
-  {num:15,code:"Bear",    kr:"곰",     key:"힘•보호",     add:"후원·리더십",       type:"positive"},
-  {num:16,code:"Stars",   kr:"별",     key:"희망•목표",   add:"비전 명확",         type:"positive"},
-  {num:17,code:"Stork",   kr:"황새",   key:"변화•개선",   add:"습관 업데이트",     type:"positive"},
-  {num:18,code:"Dog",     kr:"개",     key:"신뢰•우정",   add:"동맹·파트너십",     type:"positive"},
+  {num:15,code:"Bear",    kr:"곰",     key:"힘•보호",     add:"후원·리더십",       type:"neutral"},
+  {num:16,code:"Stars",   kr:"별",     key:"희망•목표",   add:"비전 명확",         type:"negative"},
+  {num:17,code:"Stork",   kr:"황새",   key:"변화•개선",   add:"습관 업데이트",     type:"neutral"},
+  {num:18,code:"Dog",     kr:"개",     key:"신뢰•우정",   add:"동맹·파트너십",     type:"negative"},
   {num:19,code:"Tower",   kr:"탑",     key:"제도•독립",   add:"홀로서기",         type:"neutral"},
-  {num:20,code:"Garden",  kr:"정원",   key:"모임•공개",   add:"좋은 평판",         type:"positive"},
-  {num:21,code:"Mountain",kr:"산",     key:"장애•지연",   add:"시간 필요",         type:"negative"},
+  {num:20,code:"Garden",  kr:"정원",   key:"모임•공개",   add:"좋은 평판",         type:"neutral"},
+  {num:21,code:"Mountain",kr:"산",     key:"장애•지연",   add:"시간 필요",         type:"positive"},
   {num:22,code:"Crossroad",kr:"갈림길",key:"선택•결정",   add:"데이터 비교",       type:"neutral"},
-  {num:23,code:"Mice",    kr:"쥐",     key:"손실•소모",   add:"미세누수 점검",     type:"negative"},
-  {num:24,code:"Heart",   kr:"하트",   key:"사랑•감정",   add:"감정 회복",         type:"positive"},
-  {num:25,code:"Ring",    kr:"반지",   key:"계약•순환",   add:"장기 커밋",         type:"neutral"},
+  {num:23,code:"Mice",    kr:"쥐",     key:"손실•소모",   add:"미세누수 점검",     type:"positive"},
+  {num:24,code:"Heart",   kr:"하트",   key:"사랑•감정",   add:"감정 회복",         type:"negative"},
+  {num:25,code:"Ring",    kr:"반지",   key:"계약•순환",   add:"장기 커밋",         type:"negative"},
   {num:26,code:"Book",    kr:"책",     key:"비밀•학습",   add:"정보 미공개",       type:"neutral"},
-  {num:27,code:"Letter",  kr:"편지",   key:"연락•문서",   add:"증거·통보",         type:"positive"},
+  {num:27,code:"Letter",  kr:"편지",   key:"연락•문서",   add:"증거·통보",         type:"neutral"},
   {num:28,code:"Man",     kr:"남성",   key:"핵심 인물",   add:"중심 남성",         type:"neutral"},
   {num:29,code:"Woman",   kr:"여성",   key:"핵심 인물",   add:"중심 여성",         type:"neutral"},
-  {num:30,code:"Lily",    kr:"백합",   key:"평화•성숙",   add:"휴식·품위",         type:"positive"},
-  {num:31,code:"Sun",     kr:"태양",   key:"성공•활력",   add:"긍정 결과",         type:"positive"},
-  {num:32,code:"Moon",    kr:"달",     key:"명예•감정",   add:"감정 리듬",         type:"positive"},
-  {num:33,code:"Key",     kr:"열쇠",   key:"해결•정답",   add:"돌파구",           type:"positive"},
-  {num:34,code:"Fish",    kr:"물고기", key:"재물•교류",   add:"거래 증가",         type:"neutral"},
-  {num:35,code:"Anchor",  kr:"닻",     key:"안정•고정",   add:"지속성",           type:"neutral"},
-  {num:36,code:"Cross",   kr:"십자가", key:"고난•신념",   add:"책임·버티기",       type:"negative"},
+  {num:30,code:"Lily",    kr:"백합",   key:"평화•성숙",   add:"휴식·품위",         type:"neutral"},
+  {num:31,code:"Sun",     kr:"태양",   key:"성공•활력",   add:"긍정 결과",         type:"negative"},
+  {num:32,code:"Moon",    kr:"달",     key:"명예•감정",   add:"감정 리듬",         type:"negatvie"},
+  {num:33,code:"Key",     kr:"열쇠",   key:"해결•정답",   add:"돌파구",           type:"negative"},
+  {num:34,code:"Fish",    kr:"물고기", key:"재물•교류",   add:"거래 증가",         type:"negative"},
+  {num:35,code:"Anchor",  kr:"닻",     key:"안정•고정",   add:"지속성",           type:"negative"},
+  {num:36,code:"Cross",   kr:"십자가", key:"고난•신념",   add:"책임·버티기",       type:"positive"},
 ];
 
 /* 중앙 카드 선택 셀렉트 초기화 */
@@ -338,8 +338,8 @@ function tryNextImg(img){
 
 /* 유틸 */
 function toneBadge(type){
-  if(type === "positive") return '<span class="tone pos">🔵 긍정</span>';
-  if(type === "negative") return '<span class="tone neg">🔴 부정</span>';
+  if(type === "negative") return '<span class="tone pos">🔵 긍정</span>';
+  if(type === "positive") return '<span class="tone neg">🔴 부정</span>';
   return '<span class="tone neu">🟢 중립</span>';
 }
 
@@ -392,11 +392,11 @@ function summarize(cards){
   let toneTxt = "";
   let interp = "";
   let advice = "";
-  if(top === "positive"){
+  if(top === "negative"){
     toneTxt = "🔵 긍정";
     interp = "전반적으로 흐름이 우호적입니다. 추진/확대·회복·합의의 가능성이 높습니다.";
     advice = "기회가 왔을 때 과감히 잡되, 일정/조건을 명확히 하고 실행하세요.";
-  }else if(top === "negative"){
+  }else if(top === "positive"){
     toneTxt = "🔴 부정";
     interp = "경고 신호가 뚜렷합니다. 단절/지연/소모 이슈에 대비가 필요합니다.";
     advice = "무리한 확장은 피하고 리스크 관리·정리·보수적 선택을 우선하세요.";
