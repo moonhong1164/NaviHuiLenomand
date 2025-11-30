@@ -82,6 +82,12 @@
   }
   .btn.on{background:var(--pill-on);}
 
+  /* 🔄 초기화 버튼만 살짝 다른 색으로 */
+  .btn-reset{
+    background:#ffeef3;
+    border:1px solid #ffc4d8;
+  }
+
   #stage{
     margin-top:18px;
     background:#fff;
@@ -238,8 +244,8 @@
       <button class="btn" onclick="drawN(5,this)">5카드</button>
       <button class="btn" onclick="drawCross(this)">+ 십자</button>
       <button class="btn" onclick="draw3x3(this)">9카드(3x3)</button>
-      <!-- 🔄 초기화 버튼 추가 -->
-      <button class="btn" onclick="resetAll()">초기화</button>
+      <!-- 🔄 초기화 버튼 (색만 다르게) -->
+      <button class="btn btn-reset" onclick="resetAll()">초기화</button>
     </div>
 
     <div id="stage"></div>
