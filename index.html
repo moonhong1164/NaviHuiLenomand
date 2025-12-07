@@ -234,7 +234,6 @@
         <span>중앙카드</span>
         <select id="center-select">
           <option value="">랜덤</option>
-          <!-- JS에서 카드 목록으로 자동 채워짐 -->
         </select>
       </div>
 
@@ -244,7 +243,6 @@
       <button class="btn" onclick="drawN(5,this)">5카드</button>
       <button class="btn" onclick="drawCross(this)">+ 십자</button>
       <button class="btn" onclick="draw3x3(this)">9카드(3x3)</button>
-      <!-- 🔄 초기화 버튼 (색만 다르게) -->
       <button class="btn btn-reset" onclick="resetAll()">초기화</button>
     </div>
 
@@ -309,10 +307,9 @@ function initCenterSelect(){
     sel.appendChild(opt);
   });
 }
-
 document.addEventListener("DOMContentLoaded", initCenterSelect);
 
-/* 이미지 로딩 (레노먼드-01.png 등 자동 시도) */
+/* 이미지 로딩 */
 const IMG_DIR_CANDIDATES = ["","cards/","images/","img/"];
 const IMG_EXT_CANDIDATES = [".png",".webp",".jpg",".PNG",".JPG"];
 const pad2 = n => String(n).padStart(2,"0");
@@ -383,7 +380,7 @@ function questionHTML(){
   return `<div class="box small"><b>질문:</b> ${q}</div>`;
 }
 
-/* 요약 */
+/* 톤 요약 */
 function summarize(cards){
   const score = {positive:0,negative:0,neutral:0};
   cards.forEach(c => { score[c.type]++; });
@@ -406,6 +403,163 @@ function summarize(cards){
     advice = "옵션을 비교·검증한 뒤 작게 시작하거나 유보하는 전략이 유리합니다.";
   }
   return {toneTxt, interp, advice};
+}
+
+/* ===== 스프레드별 해석 ===== */
+
+function chainSentence(a,b){
+  return `「${a.kr} + ${b.kr}」 체인: ${a.key} 위에 ${b.key}가 이어지며, ${a.add} 흐름 속에 ${b.add}가 더해지는 조합입니다.`;
+}
+
+/* 1/2/3/5카드 해석 박스 */
+function interpretN(n,cards){
+  if(!cards || !cards.length) return "";
+
+  if(n === 1){
+    const c = cards[0];
+    return `
+<div class="box small">
+  <b>1카드 해석 가이드</b>
+  <ul class="list">
+    <li>이번 리딩 전체를 대표하는 <b>핵심 테마 카드</b>입니다.</li>
+    <li>키워드: <b>${c.key}</b></li>
+    <li>메시지: ${c.add}</li>
+    <li>긍정/부정, 오늘의 전반적인 흐름을 가볍게 체크할 때 사용합니다.</li>
+  </ul>
+</div>`;
+  }
+
+  if(n === 2){
+    const [a,b] = cards;
+    return `
+<div class="box small">
+  <b>2카드 해석 가이드</b>
+  <ul class="list">
+    <li>왼쪽 카드 <b>${a.kr}</b> : 지금 상황·배경, 기본적인 흐름</li>
+    <li>오른쪽 카드 <b>${b.kr}</b> : 그에 대한 전개 방향 혹은 대응 방식</li>
+  </ul>
+  <b>체인으로 보기</b>
+  <ul class="list">
+    <li>${chainSentence(a,b)}</li>
+  </ul>
+  <p class="small">두 카드를 하나의 문장으로 이어서, “지금 상황은 …라서 …하게 흘러간다”는 식으로 정리해 보세요.</p>
+</div>`;
+  }
+
+  if(n === 3){
+    const [c1,c2,c3] = cards;
+    return `
+<div class="box small">
+  <b>3카드 라인 해석 가이드</b>
+  <ul class="list">
+    <li>2번 카드 <b>${c2.kr}</b>가 리딩의 <b>핵심 분위기·주제</b>입니다.</li>
+    <li>1번 카드 <b>${c1.kr}</b>는 지금에 이르기까지의 흐름, 3번 카드 <b>${c3.kr}</b>는 앞으로 이어질 흐름을 보여줍니다.</li>
+  </ul>
+  <b>조합·체인으로 읽기</b>
+  <ul class="list">
+    <li>1+2 (<b>${c1.kr} → ${c2.kr}</b>) : 현재 상황에 영향을 준 <b>배경·원인</b></li>
+    <li>2+3 (<b>${c2.kr} → ${c3.kr}</b>) : 지금 이후로 이어질 <b>전개·결과</b></li>
+    <li>1+3 (<b>${c1.kr} → ${c3.kr}</b>) : 겉으로 드러나지 않은 <b>부연 설명·숨은 맥락</b></li>
+  </ul>
+  <p class="small">세 장의 핵심 의미를 모아 “지금 상황은 …라서, 앞으로 …하게 흘러간다”라는 하나의 문장으로 요약해 보세요.</p>
+</div>`;
+  }
+
+  if(n === 5){
+    const [c1,c2,c3,c4,c5] = cards;
+    return `
+<div class="box small">
+  <b>5카드 라인 해석 가이드</b>
+  <ul class="list">
+    <li>3번 카드 <b>${c3.kr}</b> : <b>문제의 중심</b>, 질문자의 현재 상태</li>
+    <li>1+2 (<b>${c1.kr} → ${c2.kr}</b>) : 3번 카드가 생기게 된 <b>원인·배경</b></li>
+    <li>4+5 (<b>${c4.kr} → ${c5.kr}</b>) : 앞으로 나타날 <b>결과·정리 방향</b></li>
+  </ul>
+  <b>경첩(라인) 구조로 보는 조합</b>
+  <ul class="list">
+    <li>1+2+4 : 주제의 성격을 더 깊게 묘사할 때 사용하는 보조 조합</li>
+    <li>1+5 : 리딩 전체를 한 줄로 요약할 때 참고하는 시작–결말 축</li>
+    <li>1+3, 2+4, 3+5 : 겉으로 말하지 않은 <b>마찰·숨은 이유·보이지 않는 동기</b>를 볼 때 활용</li>
+  </ul>
+  <p class="small">3번 카드를 기준으로 앞(1·2)과 뒤(4·5)를 비교하면, “왜 이런 일이 생겼고 어디로 향하는지”가 선명해집니다.</p>
+</div>`;
+  }
+
+  return "";
+}
+
+/* 십자 스프레드 해석 */
+function interpretCross(cards){
+  if(!cards || cards.length < 5) return "";
+  const top    = cards[0];
+  const left   = cards[1];
+  const center = cards[2];
+  const right  = cards[3];
+  const bottom = cards[4];
+
+  return `
+<div class="box small">
+  <b>십자 스프레드 해석 가이드</b>
+  <ul class="list">
+    <li><b>중심 (${center.kr})</b> : 질문자 또는 주제의 <b>현재 상황·핵심</b></li>
+    <li><b>위 (${top.kr})</b> : 의식하고 있는 것, 동기, 계획·생각·걱정 등 <b>머릿속 영역</b></li>
+    <li><b>아래 (${bottom.kr})</b> : 근본, 바탕이 되는 것, <b>무의식적인 동기</b></li>
+    <li><b>왼쪽 (${left.kr})</b> : 과거, 사건의 계기, 조건 등 <b>이미 지나간 영향</b></li>
+    <li><b>오른쪽 (${right.kr})</b> : 앞으로 전개될 <b>미래·가능한 결과</b></li>
+  </ul>
+  <b>크로스 조합으로 전체 흐름 잡기</b>
+  <ul class="list">
+    <li>1+4+3 (왼쪽–위–오른쪽) : 겉으로 드러나는 전개 방향</li>
+    <li>4+1+5 (위–왼쪽–아래) : 과거 동기에서 비롯된 현재의 뿌리</li>
+    <li>1+5+3 (왼쪽–아래–오른쪽) : 감정적 흐름과 결과</li>
+    <li>4+3+5 (위–오른쪽–아래) : 머릿속 기대와 실제 결과의 간극</li>
+  </ul>
+  <p class="small">가로줄(왼·중·오)과 세로줄(위·중·아래)을 각각 3카드 라인처럼 읽고, 위 조합들로 다시 한 번 교차 점검하면 전체 리딩의 방향을 안정적으로 잡을 수 있습니다.</p>
+</div>`;
+}
+
+/* 3x3 9카드 해석 */
+function interpret3x3(order){
+  if(!order || order.length < 9) return "";
+
+  const c1 = order[0], c2 = order[1], c3 = order[2];
+  const c4 = order[3], c5 = order[4], c6 = order[5];
+  const c7 = order[6], c8 = order[7], c9 = order[8];
+
+  const topRowNames    = [c1.kr, c2.kr, c3.kr].join(" - ");
+  const bottomRowNames = [c7.kr, c8.kr, c9.kr].join(" - ");
+  const leftColNames   = [c1.kr, c4.kr, c7.kr].join(" - ");
+  const rightColNames  = [c3.kr, c6.kr, c9.kr].join(" - ");
+  const diag159        = [c1.kr, c5.kr, c9.kr].join(" - ");
+  const diag357        = [c3.kr, c5.kr, c7.kr].join(" - ");
+
+  const sel = document.getElementById("center-select");
+  const hasSignificator = sel && sel.value && sel.value !== "";
+
+  return `
+<div class="box small">
+  <b>3x3 9카드 해석 가이드</b><br>
+  중앙 카드 <b>${c5.kr}</b>가 이번 리딩의 <b>중심 테마</b>입니다.${hasSignificator ? " (중앙 카드를 직접 선택했다면, 작은 그랑 타블로처럼 <b>표지자/주제 카드</b>로 사용합니다.)" : ""}
+
+  <ul class="list">
+    <li><b>1–2–3 (${topRowNames})</b> : 생각·의식의 영역 — 동기, 계획, 머릿속 걱정</li>
+    <li><b>7–8–9 (${bottomRowNames})</b> : 감정·무의식의 영역 — 근본, 바탕이 되는 감정</li>
+    <li><b>1–4–7 (${leftColNames})</b> : 과거·사건의 동기나 계기</li>
+    <li><b>3–6–9 (${rightColNames})</b> : 미래·가능한 결과</li>
+  </ul>
+
+  <b>대각선으로 중심 테마의 성질 보기</b>
+  <ul class="list">
+    <li>1–5–9 (${diag159}) : 중심 테마가 <b>바깥 상황과 어떻게 연결되는지</b></li>
+    <li>3–5–7 (${diag357}) : 중심 테마가 <b>내면·감정과 어떻게 얽혀 있는지</b></li>
+  </ul>
+
+  <p class="small">
+    각 줄(가로·세로·대각선)을 3카드 라인처럼 하나의 문장으로 정리하고,
+    특히 중앙 카드 ${c5.kr}을 기준으로 “앞(1·4·7)”과 “뒤(3·6·9)”의 대비를 살피면
+    과거에서 미래로 이어지는 흐름이 더 또렷해집니다.
+  </p>
+</div>`;
 }
 
 /* 메인 스테이지 */
@@ -431,11 +585,13 @@ function drawN(n,btn){
       `해석: ${sum.interp}<br>`+
       `권고: ${sum.advice}</div>`
     );
+    stage.insertAdjacentHTML("beforeend", interpretN(5,pick));
   }else{
     const row = document.createElement("div");
     row.className = "row";
     pick.forEach(c => row.appendChild(makeTile(c)));
     stage.appendChild(row);
+    stage.insertAdjacentHTML("beforeend", interpretN(n,pick));
   }
 }
 
@@ -458,6 +614,8 @@ function drawCross(btn){
   g.appendChild(makeTile(cs[4]));
   g.appendChild(document.createElement("div"));
   stage.appendChild(g);
+
+  stage.insertAdjacentHTML("beforeend", interpretCross(cs));
 }
 
 /* 3x3 9카드 스프레드 (중앙 카드 선택 가능) */
@@ -476,18 +634,17 @@ function draw3x3(btn){
     const chosenNum = parseInt(chosenVal,10);
     const idx = deck.findIndex(c => c.num === chosenNum);
     if(idx !== -1){
-      centerCard = deck.splice(idx,1)[0]; // 선택한 카드를 덱에서 제거
+      centerCard = deck.splice(idx,1)[0];
     }
     const shuffled = shuffle(deck);
-    others = shuffled.slice(0,8); // 나머지 8장
+    others = shuffled.slice(0,8);
   }else{
     const shuffled = shuffle(deck);
     const nine = shuffled.slice(0,9);
-    centerCard = nine[4];               // 가운데 카드 하나 선택
-    others = nine.filter((_,i)=>i!==4);  // 나머지 8장
+    centerCard = nine[4];
+    others = nine.filter((_,i)=>i!==4);
   }
 
-  // 3x3 배열 만들기 (인덱스 4가 중앙)
   const order = [];
   let oi = 0;
   for(let i=0;i<9;i++){
@@ -510,32 +667,26 @@ function draw3x3(btn){
     `해석: ${sum.interp}<br>`+
     `권고: ${sum.advice}</div>`
   );
+  stage.insertAdjacentHTML("beforeend", interpret3x3(order));
 }
 
 /* 🔄 초기화 기능 */
 function resetAll(){
-  // 버튼 on 상태 제거
   setOn(null);
-
-  // 스테이지 비우기
   if(stage){
     stage.innerHTML = "";
   }
-
-  // 질문 영역 리셋
   const qInput = document.getElementById("qtext");
   const qCheck = document.getElementById("useQ");
   if(qInput) qInput.value = "";
   if(qCheck) qCheck.checked = false;
-
-  // 중앙 카드 선택값 리셋
   const sel = document.getElementById("center-select");
   if(sel) sel.value = "";
 }
 
-/* 🔐 아주 간단한 비밀번호 잠금 (눈가림용) */
+/* 🔐 비밀번호 잠금 */
 (function(){
-  const PASSWORD = "gnskgnsk";   // 사용자가 지정한 비밀번호
+  const PASSWORD = "gnskgnsk";
 
   const lock  = document.getElementById("lock-screen");
   const app   = document.getElementById("app");
